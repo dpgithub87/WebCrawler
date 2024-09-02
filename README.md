@@ -4,10 +4,31 @@ This is a simple component that will crawl through a website (like https://www.b
 # Functionalities
 - Only links that fall under the domain of the parent site will be accepted.
 
+# Pre-requisites
+- .Net SDK 8.0
+
+//todo
+- gitIgnore - recheck?
+- dotnet run command parameter?
+
+- result formatter html?
+
+- More private methods?
+
+- while to stream? - not needed; two different things: channel and timer
+
+-- done
+- result formatter - name change?
+- remove all comments.
+
 # How to run
-Got to the project root directory and run the following command:
+Set the following values in the appsettings.json file:
+- "InitialCrawlUris" : The list of URIs to start the crawling process.
+- "MaxDepth" : The maximum depth to crawl.
+
+Go to the project root directory and run the following command:
 ```shell
-dotnet run --project CrawlerExecutor/CrawlerExecutor.csproj
+ dotnet run --project WebCrawler.Executor/WebCrawler.Executor.csproj --url "https://bing.com" --maxdepth 1 --format "json"
 ```
 
 

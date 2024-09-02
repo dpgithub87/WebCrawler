@@ -1,8 +1,8 @@
 using WebCrawler.Executor.Models;
 
-namespace WebCrawler.Executor.ResultsFormatter;
+namespace WebCrawler.Executor.Services.Interfaces;
 
-public interface ICrawlerResultsFormatter
+public interface ICrawlResultsHandler
 {
     void WriteResults(string filePath, List<CrawlResult> crawlResults);
 }

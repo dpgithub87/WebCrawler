@@ -2,10 +2,11 @@ using System.Globalization;
 using CsvHelper;
 using CsvHelper.Configuration;
 using WebCrawler.Executor.Models;
+using WebCrawler.Executor.Services.Interfaces;
 
-namespace WebCrawler.Executor.ResultsFormatter;
+namespace WebCrawler.Executor.Services.CrawlResultsHandler;
 
-public class CsvResultsFormatter : ICrawlerResultsFormatter
+public class CsvCrawlResultsHandler : ICrawlResultsHandler
 {
     private static readonly object Lock = new object();// Lock object for thread safety
 

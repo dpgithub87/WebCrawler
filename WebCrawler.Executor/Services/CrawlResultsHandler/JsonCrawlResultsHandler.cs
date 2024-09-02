@@ -1,9 +1,10 @@
 using System.Text.Json;
 using WebCrawler.Executor.Models;
+using WebCrawler.Executor.Services.Interfaces;
 
-namespace WebCrawler.Executor.ResultsFormatter
+namespace WebCrawler.Executor.Services.CrawlResultsHandler
 {
-    public class JsonResultsFormatter : ICrawlerResultsFormatter
+    public class JsonCrawlResultsHandler : ICrawlResultsHandler
     {
         // Lock object for thread safety
         private static readonly object Lock = new object();

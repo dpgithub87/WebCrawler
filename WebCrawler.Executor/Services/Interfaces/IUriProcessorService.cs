@@ -1,8 +1,8 @@
 using WebCrawler.Executor.Models;
 
-namespace WebCrawler.Executor.UriProcessor;
+namespace WebCrawler.Executor.Services.Interfaces;
 
-public interface IUriProcessor
+public interface IUriProcessorService
 {
     Task ProcessUri(CrawlTask task, CancellationToken stoppingToken);
 }

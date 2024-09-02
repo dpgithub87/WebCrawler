@@ -27,10 +27,10 @@ public class UriExtractorService : IUriExtractorService
         {
             if (_uriValidator.IsValidUri(link, parentUri, out var uri) && !urls.Contains(uri))
             {
-                if (!urls.Add(uri)) // Add returns false if the item is already in the set
-                {
+                var addIfNotDuplicate = urls.Add(uri);
+                if (!addIfNotDuplicate)
                     _logger.LogInformation($"Skipping duplicate link: {uri.ToString()}");
-                }
+                
             }
         }
         

@@ -1,36 +1,40 @@
 using System.Collections.Concurrent;
 using System.Diagnostics;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using WebCrawler.Domain.Services.Interfaces;
+using WebCrawler.Executor.Config;
 using WebCrawler.Executor.Models;
-using WebCrawler.Executor.ResultsFormatter;
+using WebCrawler.Executor.Services.CrawlResultsHandler;
+using WebCrawler.Executor.Services.Interfaces;
 
-namespace WebCrawler.Executor.UriProcessor
+namespace WebCrawler.Executor.Services
 {
-    public class UriProcessor : IUriProcessor
+    public class UriProcessorService : IUriProcessorService
     {
         private readonly IWebPageDownloaderService _webDownloader;
         private readonly IUriExtractorService _uriExtractor;
         private readonly ConcurrentDictionary<Uri, bool> _processedUris;
         private readonly BlockingCollection<CrawlTask> _tasks;
-        private readonly ILogger<UriProcessor> _logger;
-        private readonly ICrawlerResultsFormatter _resultsFormatter;
+        private readonly ILogger<UriProcessorService> _logger;
+        private readonly ICrawlResultsHandlerFactory _crawlResultsHandlerFactory;
+        private readonly CrawlSettings _crawlSettings;
 
-        public UriProcessor(
+        public UriProcessorService(
             IWebPageDownloaderService webDownloader,
             IUriExtractorService uriExtractor,
             ConcurrentDictionary<Uri, bool> processedUris,
             BlockingCollection<CrawlTask> tasks,
-            ILogger<UriProcessor> logger,
-            ICrawlerResultsFormatter resultsFormatter)
+            ILogger<UriProcessorService> logger,
+            ICrawlResultsHandlerFactory crawlResultsHandlerFactory, IOptions<CrawlSettings> crawlSettings)
         {
             _webDownloader = webDownloader;
             _uriExtractor = uriExtractor;
             _processedUris = processedUris;
             _tasks = tasks;
             _logger = logger;
-            _resultsFormatter = resultsFormatter;
+            _crawlResultsHandlerFactory = crawlResultsHandlerFactory;
+            _crawlSettings = crawlSettings.Value;
         }
 
         public async Task ProcessUri(CrawlTask task, CancellationToken stoppingToken)
@@ -40,6 +44,8 @@ namespace WebCrawler.Executor.UriProcessor
             {
                 task.Status = CrawlTaskStatus.Processing;
 
+                var outputFormat = _crawlSettings.OutputFormat;
+                
                 var (htmlContent, links) = await DownloadAndExtractUris(task.Uri);
                 if (htmlContent == null)
                 {
@@ -51,7 +57,7 @@ namespace WebCrawler.Executor.UriProcessor
                 
                 AddBackgroundTasksToCrawlLinksInBfsOrder(task, stoppingToken, links);
 
-                BuildAndWriteResults(task, links, stopwatch);
+                BuildAndWriteResults(task, links, outputFormat, stopwatch);
 
                 task.Status = CrawlTaskStatus.Completed;
             }
@@ -91,7 +97,7 @@ namespace WebCrawler.Executor.UriProcessor
             }
         }
         
-        private void BuildAndWriteResults(CrawlTask task, IEnumerable<Uri> links, Stopwatch stopwatch)
+        private void BuildAndWriteResults(CrawlTask task, IEnumerable<Uri> links, string outputFormat, Stopwatch stopwatch)
         {
             var crawlResult = new CrawlResult(task.Uri, task.ParentUri)
             {
@@ -99,8 +105,8 @@ namespace WebCrawler.Executor.UriProcessor
                 CrawlTime = stopwatch.Elapsed,
                 Level = task.Level
             };
-
-            _resultsFormatter.WriteResults(task.OutputFilePath, new List<CrawlResult> { crawlResult });
+            var resultsHandler = _crawlResultsHandlerFactory.GetHandler(outputFormat);
+            resultsHandler?.WriteResults(task.OutputFilePath, new List<CrawlResult> { crawlResult });
         }
     }
 }
