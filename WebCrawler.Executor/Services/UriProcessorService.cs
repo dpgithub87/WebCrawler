@@ -18,7 +18,7 @@ namespace WebCrawler.Executor.Services
         private readonly BlockingCollection<CrawlTask> _tasks;
         private readonly ILogger<UriProcessorService> _logger;
         private readonly ICrawlResultsHandlerFactory _crawlResultsHandlerFactory;
-        private readonly CrawlSettings _crawlSettings;
+        private readonly CrawlOptions _crawlOptions;
 
         public UriProcessorService(
             IWebPageDownloaderService webDownloader,
@@ -26,7 +26,7 @@ namespace WebCrawler.Executor.Services
             ConcurrentDictionary<Uri, bool> processedUris,
             BlockingCollection<CrawlTask> tasks,
             ILogger<UriProcessorService> logger,
-            ICrawlResultsHandlerFactory crawlResultsHandlerFactory, IOptions<CrawlSettings> crawlSettings)
+            ICrawlResultsHandlerFactory crawlResultsHandlerFactory, IOptions<CrawlOptions> crawlSettings)
         {
             _webDownloader = webDownloader;
             _uriExtractor = uriExtractor;
@@ -34,7 +34,7 @@ namespace WebCrawler.Executor.Services
             _tasks = tasks;
             _logger = logger;
             _crawlResultsHandlerFactory = crawlResultsHandlerFactory;
-            _crawlSettings = crawlSettings.Value;
+            _crawlOptions = crawlSettings.Value;
         }
 
         public async Task ProcessUri(CrawlTask task, CancellationToken stoppingToken)
@@ -43,23 +43,15 @@ namespace WebCrawler.Executor.Services
             try
             {
                 task.Status = CrawlTaskStatus.Processing;
-
-                var outputFormat = _crawlSettings.OutputFormat;
                 
-                var (htmlContent, links) = await DownloadAndExtractUris(task.Uri);
-                if (htmlContent == null)
-                {
-                    task.Status = CrawlTaskStatus.Failed;
-                    return;
-                }
-
-                _processedUris.TryAdd(task.Uri, true);
+                var (success, links) = await DownloadPageAndExtractUris(task, stoppingToken);
+                if (!success) return;
+               
+                var scheduler = AddBackgroundTasksToCrawlLinksInBfsOrder(task, stoppingToken, links);
+                var crawlResultTask = BuildAndWriteResults(task, links, stopwatch);
+                await Task.WhenAll(scheduler, crawlResultTask);
                 
-                AddBackgroundTasksToCrawlLinksInBfsOrder(task, stoppingToken, links);
-
-                BuildAndWriteResults(task, links, outputFormat, stopwatch);
-
-                task.Status = CrawlTaskStatus.Completed;
+               task.Status = CrawlTaskStatus.Completed;
             }
             catch (Exception ex)
             {
@@ -71,33 +63,37 @@ namespace WebCrawler.Executor.Services
                 stopwatch.Stop();
             }
         }
-
-        private async Task<(string? htmlContent, IEnumerable<Uri> links)> DownloadAndExtractUris(Uri uri)
+        
+        private async Task<(bool success, List<Uri>? links)> DownloadPageAndExtractUris(CrawlTask task, CancellationToken stoppingToken)
         {
-            var htmlContent = await _webDownloader.DownloadPage(uri);
+            var htmlContent = await _webDownloader.DownloadPage(task.Uri, stoppingToken);
             if (htmlContent == null)
             {
-                return (null, Enumerable.Empty<Uri>());
+                task.Status = CrawlTaskStatus.Failed;
+                return (false, null);
             }
 
-            var links = _uriExtractor.ExtractValidUrls(htmlContent, uri);
-            return (htmlContent, links);
+            var links = _uriExtractor.ExtractValidUrls(htmlContent, task.Uri);
+            return (true, links.ToList());
         }
-
-        private void AddBackgroundTasksToCrawlLinksInBfsOrder(CrawlTask parentTask, CancellationToken stoppingToken, IEnumerable<Uri> links)
+        private async Task AddBackgroundTasksToCrawlLinksInBfsOrder(CrawlTask parentTask, CancellationToken stoppingToken, List<Uri> links)
         {
-            foreach (var link in links)
+            _processedUris.TryAdd(parentTask.Uri, true);
+
+            await Parallel.ForEachAsync(links, stoppingToken, (link, token) =>
             {
                 _logger.LogInformation(link.ToString());
                 if (_processedUris.TryAdd(link, true))
                 {
                     var newTask = new CrawlTask(link, parentTask.OutputFilePath, parentTask.Uri, parentTask.Level + 1);
-                    _tasks.Add(newTask, stoppingToken);
+                    _tasks.Add(newTask, token);
                 }
-            }
+
+                return ValueTask.CompletedTask;
+            });
         }
         
-        private void BuildAndWriteResults(CrawlTask task, IEnumerable<Uri> links, string outputFormat, Stopwatch stopwatch)
+        private async Task BuildAndWriteResults(CrawlTask task, List<Uri> links, Stopwatch stopwatch)
         {
             var crawlResult = new CrawlResult(task.Uri, task.ParentUri)
             {
@@ -105,8 +101,8 @@ namespace WebCrawler.Executor.Services
                 CrawlTime = stopwatch.Elapsed,
                 Level = task.Level
             };
-            var resultsHandler = _crawlResultsHandlerFactory.GetHandler(outputFormat);
-            resultsHandler?.WriteResults(task.OutputFilePath, new List<CrawlResult> { crawlResult });
+            var resultsHandler = _crawlResultsHandlerFactory.GetHandler(_crawlOptions.OutputFormat!);
+            await resultsHandler?.WriteResults(task.OutputFilePath, new List<CrawlResult> { crawlResult })!;
         }
     }
 }

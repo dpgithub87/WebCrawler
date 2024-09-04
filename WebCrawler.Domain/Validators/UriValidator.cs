@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using Microsoft.Extensions.Logging;
 using WebCrawler.Domain.Helpers;
 
@@ -12,24 +13,55 @@ namespace WebCrawler.Domain.Validators;
             _logger = logger;
         }
 
-        public bool IsValidUri(string link, Uri parentUri, out Uri uri)
+        public bool IsValidUri(string link, Uri parentUri, out Uri? uri)
         {
             uri = null!;
             
-            // Skip bookmarks and invalid links
-            if (string.IsNullOrWhiteSpace(link) || link.StartsWith("#"))
+            if (!SkipBookmarkAndInvalidLink(link)) return false;
+           
+            if (!SkipIfNotAbsoluteLink(link, parentUri, out uri)) return false;
+            
+            if (!SkipInValidSchemaAndIfNotParentDomain(parentUri, ref uri)) return false;
+            
+            if (!SkipParentUri(parentUri, uri)) return false;
+
+            return true;
+        }
+
+        private bool SkipParentUri(Uri parentUri, Uri uri)
+        {
+            if (string.Equals(uri.Host, parentUri.Host, StringComparison.CurrentCultureIgnoreCase) &&
+                string.Equals(uri.PathAndQuery, parentUri.PathAndQuery, StringComparison.CurrentCultureIgnoreCase))
             {
-                _logger.LogInformation($"Skipping invalid or bookmark link: {link}");
+                _logger.LogInformation($"Not adding child link: {uri.ToString()} because it is the same as parent page");
                 return false;
             }
 
-            // Convert relative links to absolute links
+            return true;
+        }
+
+        private bool SkipInValidSchemaAndIfNotParentDomain(Uri parentUri, [AllowNull] ref Uri uri)
+        {
+            if (uri!.Scheme != Uri.UriSchemeHttp && uri.Scheme != Uri.UriSchemeHttps)
+            {
+                _logger.LogInformation($"Skipping link with unsupported scheme: {uri.Scheme}");
+                uri = null!;
+                return false;
+            }
+
+            if (uri.Host != parentUri.Host)
+            {
+                _logger.LogInformation($"Skipping link with different host: {uri.Host}");
+                return false;
+            }
+
+            return true;
+        }
+
+        private bool SkipIfNotAbsoluteLink(string link, Uri parentUri, out Uri? uri)
+        {
             if (link.StartsWith("/"))
             {
-                // // Get the parent URI string without the last segment
-                // var parentUriWithoutLastSegment = new Uri(parentUri.GetParentUriString());
-                // uri = new Uri(parentUriWithoutLastSegment, link);
-                // Convert relative links to absolute links
                 var parentUriWithoutLastSegment = new Uri(parentUri.GetParentUriString());
                 if (!Uri.TryCreate(parentUriWithoutLastSegment, link, out uri))
                 {
@@ -48,25 +80,14 @@ namespace WebCrawler.Domain.Validators;
                 }
             }
 
-            // Check the scheme and domain
-            if (uri.Scheme != Uri.UriSchemeHttp && uri.Scheme != Uri.UriSchemeHttps)
-            {
-                _logger.LogInformation($"Skipping link with unsupported scheme: {uri.Scheme}");
-                uri = null!;
-                return false;
-            }
+            return true;
+        }
 
-            if (uri.Host != parentUri.Host)
+        private bool SkipBookmarkAndInvalidLink(string link)
+        {
+            if (string.IsNullOrWhiteSpace(link) || link.StartsWith("#"))
             {
-                _logger.LogInformation($"Skipping link with different host: {uri.Host}");
-                return false;
-            }
-
-            // Additional validation: Check if the URI is the same as the parent page
-            if (string.Equals(uri.Host, parentUri.Host, StringComparison.CurrentCultureIgnoreCase) &&
-                string.Equals(uri.PathAndQuery, parentUri.PathAndQuery, StringComparison.CurrentCultureIgnoreCase))
-            {
-                _logger.LogInformation($"Not adding child link: {uri.ToString()} because it is the same as parent page");
+                _logger.LogInformation($"Skipping invalid or bookmark link: {link}");
                 return false;
             }
 

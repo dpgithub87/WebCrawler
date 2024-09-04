@@ -6,44 +6,42 @@ namespace WebCrawler.Executor.Services.CrawlResultsHandler
 {
     public class JsonCrawlResultsHandler : ICrawlResultsHandler
     {
-        // Lock object for thread safety
-        private static readonly object Lock = new object();
-
-        public void WriteResults(string outputFilePath, List<CrawlResult> newResults)
+       private static readonly SemaphoreSlim Semaphore = new SemaphoreSlim(1, 1);
+        
+        public async Task WriteResults(string outputFilePath, List<CrawlResult> newResults)
         {
-            lock (Lock)
+            await Semaphore.WaitAsync();
+            try
             {
                 List<CrawlResult> existingResults;
-                
+
                 if (File.Exists(outputFilePath))
                 {
-                    var existingJson = File.ReadAllText(outputFilePath);
-                    existingResults = JsonSerializer.Deserialize<List<CrawlResult>>(existingJson) ?? new List<CrawlResult>();
+                    var existingJson = await File.ReadAllTextAsync(outputFilePath);
+                    existingResults = JsonSerializer.Deserialize<List<CrawlResult>>(existingJson) ??
+                                      new List<CrawlResult>();
                 }
                 else
                 {
                     existingResults = new List<CrawlResult>();
                 }
-                
+
                 existingResults.AddRange(newResults);
-                
+
                 var options = new JsonSerializerOptions
                 {
                     WriteIndented = true
                 };
-                
+
                 var json = JsonSerializer.Serialize(existingResults, options);
-                File.WriteAllText(outputFilePath, json);
-               
-                // using var stream = new FileStream(outputFilePath, FileMode.Append, FileAccess.Write, FileShare.None);
-                // using var writer = new StreamWriter(stream);
-                // foreach (var result in newResults)
-                // {
-                //     var json = JsonSerializer.Serialize(result);
-                //     writer.WriteLine(json);
-                // }
-                
+                await File.WriteAllTextAsync(outputFilePath, json);
             }
+            finally
+            {
+                Semaphore.Release();
+            }
+                
+               
         }
     }
 }

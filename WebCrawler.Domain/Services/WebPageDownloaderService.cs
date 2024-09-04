@@ -1,22 +1,35 @@
+using Microsoft.Extensions.Logging;
 using WebCrawler.Domain.Services.Interfaces;
 using WebCrawler.Infrastructure.Clients.Interfaces;
+using WebCrawler.Infrastructure.Repository.Interfaces;
 
 namespace WebCrawler.Domain.Services;
 
 public class WebPageDownloaderService : IWebPageDownloaderService
 {
-    private readonly IWebPageDownloaderClient _webPageDownloaderClient;
-    public WebPageDownloaderService(IWebPageDownloaderClient webPageDownloaderClient)
+    private readonly IWebPageRepository _webPageRepository;
+    private readonly ILogger<WebPageDownloaderService> _logger;
+
+    public WebPageDownloaderService(IWebPageRepository webPageRepository, ILogger<WebPageDownloaderService> logger)
     {
-        _webPageDownloaderClient = webPageDownloaderClient;
+        _webPageRepository = webPageRepository;
+        _logger = logger;
     }
-   public async Task<string?> DownloadPage(Uri targetUri)
+   public async Task<string?> DownloadPage(Uri targetUri, CancellationToken cancellationToken)
    {
-       if ((targetUri.Scheme.ToLower() != "http") && (targetUri.Scheme.ToLower() != "https"))
+       try
        {
+           if ((targetUri.Scheme.ToLower() != "http") && (targetUri.Scheme.ToLower() != "https"))
+           {
+               return null;
+           }
+
+           return await _webPageRepository.GetWebPageAsync(targetUri, cancellationToken);
+       }
+       catch (Exception e)
+       {
+           _logger.LogError(e, "Error downloading page");
            return null;
        }
-       
-       return await _webPageDownloaderClient.DownloadPageAsync(targetUri);
    }
 }

@@ -1,0 +1,41 @@
+[
+  {
+    "uri": "https://www.google.com",
+    "parentUri": null,
+    "links": [
+      "https://www.google.com/imghp?hl=en\u0026tab=wi",
+      "https://www.google.com/preferences?hl=en",
+      "https://www.google.com/advanced_search?hl=en-GB\u0026amp;authuser=0",
+      "https://www.google.com/intl/en/ads/",
+      "https://www.google.com/services/",
+      "https://www.google.com/intl/en/about.html",
+      "https://www.google.com/setprefdomain?prefdom=GB\u0026amp;prev=https://www.google.co.uk/\u0026amp;sig=K_-80kdkAA6BT6I8t9HLJ-ytG6F_k%3D",
+      "https://www.google.com/intl/en/policies/privacy/",
+      "https://www.google.com/intl/en/policies/terms/"
+    ],
+    "crawlTime": "00:00:00.2911187",
+    "level": 0
+  },
+  {
+    "uri": "https://bing.com",
+    "parentUri": null,
+    "links": [
+      "https://bing.com/chat?q=Microsoft\u002BCopilot\u0026amp;FORM=hpcodx",
+      "https://bing.com/images?FORM=Z9LH",
+      "https://bing.com/videos?FORM=Z9LH1",
+      "https://bing.com/shop?FORM=Z9LHS4",
+      "https://bing.com/maps?FORM=Z9LH2",
+      "https://bing.com/news/search?q=Top\u002Bstories\u0026amp;nvaug=%5bNewsVertical\u002BCategory%3d%22rt_MaxClass%22%5d\u0026amp;FORM=Z9LH3",
+      "https://bing.com/search?q=Bing\u002Btranslate\u0026amp;FORM=TTAHP1",
+      "https://bing.com/travel?FORM=TGHPNT",
+      "https://bing.com/homes?FORM=000059",
+      "https://bing.com/search?q=Crystal\u002BLake\u002Bin\u002Bthe\u002BEnchantments\u0026amp;form=hpcapt\u0026amp;filters=HpDate:\u0026quot;20240902_2300\u0026quot;",
+      "https://bing.com/th?id=OHR.AlpineLakes_EN-GB6796431877_1920x1200.jpg\u0026amp;rf=LaDigue_1920x1200.jpg",
+      "https://bing.com/maps?osid=8cb299cf-fa66-4ad6-accb-b2357ea17b91\u0026amp;cp=47.788324~-127.596476\u0026amp;lvl=5.406883\u0026amp;pi=0\u0026amp;imgid=0bda707b-d0d3-4985-9b02-f3f64715e51c\u0026amp;v=2\u0026amp;sV=2\u0026amp;form=hpbal1",
+      "https://bing.com/set/homepage?PUBL=BINGCOM",
+      "https://bing.com/rewards/dashboard"
+    ],
+    "crawlTime": "00:00:00.3307318",
+    "level": 0
+  }
+]

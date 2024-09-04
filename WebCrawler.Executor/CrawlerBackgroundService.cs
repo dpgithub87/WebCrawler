@@ -4,9 +4,9 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using WebCrawler.Executor.Config;
-using WebCrawler.Executor.Helpers;
 using WebCrawler.Executor.Models;
 using WebCrawler.Executor.Services.Interfaces;
+using WebCrawler.Executor.Utilities;
 
 namespace WebCrawler.Executor
 {
@@ -15,13 +15,14 @@ namespace WebCrawler.Executor
         private readonly IServiceProvider _serviceProvider;
         private readonly BlockingCollection<CrawlTask> _tasks;
         private readonly ConcurrentDictionary<Uri, bool> _processedUris;
-        private readonly CrawlSettings _crawlSettings;
+        private readonly CrawlOptions _crawlOptions;
         private readonly IConfiguration _configuration;
         private readonly ILogger<CrawlerBackgroundService> _logger;
         private readonly IUriProcessorService _uriProcessorService;
+        private readonly IHostApplicationLifetime _applicationLifetime;
 
         public CrawlerBackgroundService(IServiceProvider serviceProvider, IConfiguration configuration, ILogger<CrawlerBackgroundService> logger
-            , IUriProcessorService uriProcessorService, BlockingCollection<CrawlTask> tasks, ConcurrentDictionary<Uri, bool> processedUris, IOptions<CrawlSettings> crawlSettings)
+            ,IUriProcessorService uriProcessorService, BlockingCollection<CrawlTask> tasks, ConcurrentDictionary<Uri, bool> processedUris, IOptions<CrawlOptions> crawlOptions, IHostApplicationLifetime applicationLifetime)
         {
             _serviceProvider = serviceProvider;
             _configuration = configuration;
@@ -29,19 +30,39 @@ namespace WebCrawler.Executor
             _uriProcessorService = uriProcessorService;
             _tasks = tasks;
             _processedUris = processedUris;
-            _crawlSettings = crawlSettings.Value;
+            _applicationLifetime = applicationLifetime;
+            _crawlOptions = crawlOptions.Value;
         }
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
-            var initialCrawlUris = _crawlSettings.InitialCrawlUris?.Split(",").ToList();
-            var absoluteOutputFilePath = GetAbsoluteOutputPathFromConfig();
-            
-            if (initialCrawlUris == null || initialCrawlUris.Count == 0)
-                return;
+            try
+            {
+                if (!GetConfigValues(out var initialCrawlUris, out var absoluteOutputFilePath)) return;
 
+                CreateTasksForInitialUris(stoppingToken, initialCrawlUris, absoluteOutputFilePath);
+
+                MonitorAndProcessCrawlTasks(stoppingToken);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error processing crawl tasks.");
+            }
+        }
+
+        private bool GetConfigValues(out List<string>? initialCrawlUris, out string absoluteOutputFilePath)
+        {
+            initialCrawlUris = _crawlOptions.InitialCrawlUris?.Split(",").ToList();
+            absoluteOutputFilePath = GetAbsoluteOutputPathFromConfig();
+
+            return initialCrawlUris != null && initialCrawlUris.Count != 0;
+        }
+        
+        private void CreateTasksForInitialUris(CancellationToken stoppingToken, List<string>? initialCrawlUris,
+            string absoluteOutputFilePath)
+        {
             // Convert the valid links to a collection of tasks
-            foreach (var strUri in initialCrawlUris)
+            foreach (var strUri in initialCrawlUris!)
             {
                 var uri = Uri.TryCreate(strUri, UriKind.Absolute, out var result) ? result : null;
                 if (uri == null)
@@ -49,19 +70,25 @@ namespace WebCrawler.Executor
                     _logger.LogWarning($"Invalid URI: {strUri}");
                     continue;
                 }
+
                 _tasks.Add(new CrawlTask(uri, absoluteOutputFilePath), stoppingToken);
             }
-
-            MonitorAndProcessTasks(stoppingToken);
         }
 
-        private void MonitorAndProcessTasks(CancellationToken stoppingToken)
+        private void MonitorAndProcessCrawlTasks(CancellationToken stoppingToken)
         {
+            var maxIdleTimeMilliSeconds = 10000; // 10 seconds 
+            
             while (!stoppingToken.IsCancellationRequested)
             {
-                if (!_tasks.TryTake(out var task, Timeout.Infinite, stoppingToken)) continue;
-
-                if (task.Level > _crawlSettings.MaxDepth)
+                if (!_tasks.TryTake(out var task, maxIdleTimeMilliSeconds, stoppingToken)) 
+                {
+                    _logger.LogInformation("Max idle time exceeded. Stopping the process.");
+                    _applicationLifetime.StopApplication();
+                    break;
+                }
+                
+                if (task.Level > _crawlOptions.MaxDepth)
                 {
                     task.Status = CrawlTaskStatus.Failed;
                     continue;
@@ -76,10 +103,10 @@ namespace WebCrawler.Executor
 
         private string GetAbsoluteOutputPathFromConfig()
         {
-       
             var projectRoot = OutputPathHelper.GetProjectRoot();
-            var outputFileName = $"crawl_{DateTime.Now:yyyyMMddHHmmss}_{Guid.NewGuid()}.json";
-            var relativePath = $"{_crawlSettings.OutputFilePath!}/{outputFileName}";
+            var outputFormat = _crawlOptions.OutputFormat;
+            var outputFileName = $"crawl_{DateTime.Now:yyyyMMddHHmmss}_{Guid.NewGuid()}.{outputFormat}";
+            var relativePath = $"{_crawlOptions.OutputFilePath!}/{outputFileName}";
             var absOutputFilePath = Path.Combine(projectRoot, relativePath);
             return absOutputFilePath;
         }

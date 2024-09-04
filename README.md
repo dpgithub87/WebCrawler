@@ -8,8 +8,7 @@ This is a simple component that will crawl through a website (like https://www.b
 - .Net SDK 8.0
 
 //todo
-- gitIgnore - recheck?
-- dotnet run command parameter?
+
 
 - result formatter html?
 
@@ -20,10 +19,12 @@ This is a simple component that will crawl through a website (like https://www.b
 -- done
 - result formatter - name change?
 - remove all comments.
+- gitIgnore - recheck?
+- dotnet run command parameter?
 
 # How to run
 Set the following values in the appsettings.json file:
-- "InitialCrawlUris" : The list of URIs to start the crawling process.
+- "InitialCrawlUris" : The comma separated URIs to start the crawling process.
 - "MaxDepth" : The maximum depth to crawl.
 
 Go to the project root directory and run the following command:

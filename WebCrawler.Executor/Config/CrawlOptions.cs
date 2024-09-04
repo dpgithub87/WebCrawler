@@ -2,7 +2,7 @@ using CommandLine;
 
 namespace WebCrawler.Executor.Config;
 
-public class CrawlSettings
+public class CrawlOptions
 {
     [Option('u', "url", HelpText = "Set the initial crawl URIs as a comma-separated string.")]
     public string? InitialCrawlUris { get; set; }

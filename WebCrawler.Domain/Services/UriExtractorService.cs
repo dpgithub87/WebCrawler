@@ -25,12 +25,11 @@ public class UriExtractorService : IUriExtractorService
         var links = _htmlParser.GetLinks(pageContent);
         foreach (var link in links)
         {
-            if (_uriValidator.IsValidUri(link, parentUri, out var uri) && !urls.Contains(uri))
+            if (_uriValidator.IsValidUri(link, parentUri, out var uri) && !urls.Contains(uri!))
             {
-                var addIfNotDuplicate = urls.Add(uri);
+                var addIfNotDuplicate = urls.Add(uri!);
                 if (!addIfNotDuplicate)
-                    _logger.LogInformation($"Skipping duplicate link: {uri.ToString()}");
-                
+                    _logger.LogInformation($"Skipping duplicate link: {uri!.ToString()}");
             }
         }
         

@@ -5,7 +5,7 @@ namespace WebCrawler.Domain.Helpers;
 
 public class HtmlAgilityParser : IHtmlParser
 {
-    private ILogger<HtmlAgilityParser> _logger;
+    private readonly ILogger<HtmlAgilityParser> _logger;
 
     public HtmlAgilityParser(ILogger<HtmlAgilityParser> logger)
     {
