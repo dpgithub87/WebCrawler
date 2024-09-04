@@ -15,6 +15,13 @@ public class CsvCrawlResultsHandler : ICrawlResultsHandler
         await Semaphore.WaitAsync();
         try
         {
+            // Ensure the directory exists
+            var directory = Path.GetDirectoryName(filePath);
+            if (!string.IsNullOrEmpty(directory))
+            {
+                Directory.CreateDirectory(directory);
+            }
+            
             var config = new CsvConfiguration(CultureInfo.InvariantCulture)
             {
                 HasHeaderRecord = !File.Exists(filePath)

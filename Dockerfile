@@ -4,6 +4,8 @@ WORKDIR /app
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 WORKDIR /src
 COPY ["WebCrawler.Executor/WebCrawler.Executor.csproj", "WebCrawler.Executor/"]
+COPY ["WebCrawler.Domain/WebCrawler.Domain.csproj", "WebCrawler.Domain/"]
+COPY ["WebCrawler.Infrastructure/WebCrawler.Infrastructure.csproj", "WebCrawler.Infrastructure/"]
 RUN dotnet restore "WebCrawler.Executor/WebCrawler.Executor.csproj"
 COPY . .
 WORKDIR "/src/WebCrawler.Executor"

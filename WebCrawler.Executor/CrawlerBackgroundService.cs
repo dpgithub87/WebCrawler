@@ -77,16 +77,9 @@ namespace WebCrawler.Executor
 
         private void MonitorAndProcessCrawlTasks(CancellationToken stoppingToken)
         {
-            var maxIdleTimeMilliSeconds = 10000; // 10 seconds 
-            
             while (!stoppingToken.IsCancellationRequested)
             {
-                if (!_tasks.TryTake(out var task, maxIdleTimeMilliSeconds, stoppingToken)) 
-                {
-                    _logger.LogInformation("Max idle time exceeded. Stopping the process.");
-                    _applicationLifetime.StopApplication();
-                    break;
-                }
+                if (!_tasks.TryTake(out var task, Timeout.Infinite, stoppingToken)) continue;
                 
                 if (task.Level > _crawlOptions.MaxDepth)
                 {

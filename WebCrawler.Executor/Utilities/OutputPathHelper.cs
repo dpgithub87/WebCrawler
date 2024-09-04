@@ -16,7 +16,7 @@ public static class OutputPathHelper
 
         if (directoryInfo == null)
         {
-            throw new InvalidOperationException("Project root could not be found.");
+            return String.Empty;
         }
 
         return directoryInfo.FullName;

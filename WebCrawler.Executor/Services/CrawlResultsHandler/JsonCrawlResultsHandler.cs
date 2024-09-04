@@ -14,7 +14,13 @@ namespace WebCrawler.Executor.Services.CrawlResultsHandler
             try
             {
                 List<CrawlResult> existingResults;
-
+                
+                // Ensure the directory exists
+                var directory = Path.GetDirectoryName(outputFilePath);
+                if (!string.IsNullOrEmpty(directory))
+                {
+                    Directory.CreateDirectory(directory);
+                }
                 if (File.Exists(outputFilePath))
                 {
                     var existingJson = await File.ReadAllTextAsync(outputFilePath);
