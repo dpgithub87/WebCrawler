@@ -1,6 +1,6 @@
 # Simple Web Crawler
 
-A lightweight and efficient web crawler that recursively crawls through a website, retrieves sub-links, and continues to crawl those pages, all while staying within the domain of the parent site. For example, you can crawl websites like BBC.
+A lightweight and efficient web crawler that recursively crawls through a website, retrieves sub-links, and continues to crawl those pages, all while staying within the domain of the parent site.
 
 ## Features
 
