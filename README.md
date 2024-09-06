@@ -87,7 +87,7 @@ docker cp web-crawler-container:/app/Output .
   
 ### Integration
 
-- **Message Queueing**: Communicates between microservices using systems like Azure Service Bus.
+- **Message Queueing**: Communicates between microservices using systems like Azure Service Bus or RabbitMQ.
 - **API Communication**: Microservices can communicate via gRPC or REST as an alternative.
 
 ### CI/CD Pipeline
