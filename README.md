@@ -61,7 +61,7 @@ docker cp web-crawler-container:/app/Output .
 
 ### Core Components
 
-- This project follows the Clean code architecture where we have following components:
+This project follows the Clean code architecture where we have following components:
   - Executor (API / Interface layer)
     - **Crawler Executor**: This is the main component responsible for orchestrating the crawling process.
     - **Background Service**: Manages concurrent crawling using parallel tasks.
