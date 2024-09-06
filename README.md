@@ -20,7 +20,7 @@ A lightweight and efficient web crawler that recursively crawls through a websit
 
 ### 1. Clone or Download the Repository
 
-You can either download this repository as a zip file or clone it via git.
+You can either download this repository as a [zip file](https://github.com/dpgithub87/WebCrawler/archive/refs/heads/main.zip) or clone it via git.
 ```bash
 git clone https://github.com/dpgithub87/WebCrawler.git
 ```
