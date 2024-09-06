@@ -88,7 +88,11 @@ This project follows the Clean code architecture where we have following compone
 ## Productionize the Application
 ### Microservice Architecture
 
-- Extract the WebDownloader and UriExtractor as independent microservices to enhance scalability and efficiency.
+- Extract the WebDownloader and UriExtractor as independent microservices to enhance horizontal scaling and efficiency.
+
+### Parallel Processing at Kubernetes layer
+
+- Implement the crawler-executor as a Cron job or as a deployment pod to monitor a queue for new sites, to enable parallel crawling.
 
 ### Error Handling
 
@@ -128,11 +132,6 @@ The application can be deployed on any Kubernetes cluster (AKS, EKS, etc.).
 - Introduce a queuing mechanism (e.g., URL Frontier) to manage the crawling process more efficiently.
 - Integrate `robots.txt` for honoring website-specific crawling rules.
 - Rate Limiting Rules per Website: Implement rate limiting to avoid overloading the target website and to comply with its usage policies. This can be done using targeted queues with specific rules tied to each website.
-
-### Parallel Processing at Kubernetes layer
-
-- Implement the crawler-executor as a Cron job or as a deployment pod to monitor a queue for new sites, enabling parallel crawling.
-
 
 ### Advanced Content Extraction
 - Scraping Specific Content: Implement options to scrape and structure specific data such as titles, meta descriptions, headers, images, and other custom elements based on user-specified selectors or patterns.
