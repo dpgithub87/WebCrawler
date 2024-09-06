@@ -74,8 +74,9 @@ docker cp web-crawler-container:/app/Output .
 
 ### Data structures
 - Thread safe data structures are used to store the task details and to store the list of processed Uris in concurrent execution.
+![crawler_system_architecture](crawler_system_architecture.png)
 
-## Productionize
+## Productionize the Application
 ### Microservice Architecture
 
 - Extract the WebDownloader and UriExtractor as independent microservices to enhance scalability and efficiency.
