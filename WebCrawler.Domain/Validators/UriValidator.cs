@@ -72,7 +72,6 @@ namespace WebCrawler.Domain.Validators;
             }
             else
             {
-                // If the link is not a valid absolute URI, skip it
                 if (!Uri.TryCreate(link, UriKind.Absolute, out uri))
                 {
                     _logger.LogInformation($"Skipping invalid absolute link: {link}");

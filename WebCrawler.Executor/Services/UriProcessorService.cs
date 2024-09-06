@@ -85,7 +85,7 @@ namespace WebCrawler.Executor.Services
                 _logger.LogInformation(link.ToString());
                 if (_processedUris.TryAdd(link, true))
                 {
-                    var newTask = new CrawlTask(link, parentTask.OutputFilePath, parentTask.Uri, parentTask.Level + 1);
+                    var newTask = new CrawlTask(link, parentTask.OutputFilePath, parentTask.Uri, parentTask.DepthLevel + 1);
                     _tasks.Add(newTask, token);
                 }
 
@@ -99,7 +99,7 @@ namespace WebCrawler.Executor.Services
             {
                 Links = links.ToList(),
                 CrawlTime = stopwatch.Elapsed,
-                Level = task.Level
+                DepthLevel = task.DepthLevel
             };
             var resultsHandler = _crawlResultsHandlerFactory.GetHandler(_crawlOptions.OutputFormat!);
             await resultsHandler?.WriteResults(task.OutputFilePath, new List<CrawlResult> { crawlResult })!;

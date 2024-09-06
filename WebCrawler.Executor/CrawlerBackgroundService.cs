@@ -81,7 +81,7 @@ namespace WebCrawler.Executor
             {
                 if (!_tasks.TryTake(out var task, Timeout.Infinite, stoppingToken)) continue;
                 
-                if (task.Level > _crawlOptions.MaxDepth)
+                if (task.DepthLevel > _crawlOptions.MaxDepth)
                 {
                     task.Status = CrawlTaskStatus.Failed;
                     continue;

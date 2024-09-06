@@ -8,7 +8,7 @@ public class CrawlResult
     public Uri Uri { get; set; }
     
     [JsonPropertyName("parentUri")]
-    public Uri ParentUri { get; set; } // The URI of the parent page
+    public Uri ParentUri { get; set; }
     
     [JsonPropertyName("links")]
     public List<Uri> Links { get; set; }
@@ -17,7 +17,7 @@ public class CrawlResult
     public TimeSpan CrawlTime { get; set; }
    
     [JsonPropertyName("level")]
-    public int Level { get; set; } // Depth level of the crawl
+    public int DepthLevel { get; set; } 
 
     public CrawlResult(Uri uri, Uri parentUri)
     {
