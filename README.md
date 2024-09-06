@@ -11,7 +11,10 @@ A lightweight and efficient web crawler that recursively crawls through a websit
 
 ## Prerequisites
 
-- .NET SDK 8.0
+- [.NET SDK 8.0](https://dotnet.microsoft.com/en-us/download/dotnet/8.0)
+- Docker Desktop 4.22
+- Docker Engine - v24^
+- OS: Windows 10 / Linux / Mac
 
 ## Usage
 
@@ -58,10 +61,14 @@ docker cp web-crawler-container:/app/Output .
 
 ### Core Components
 
-- **Crawler Executor**: This is the main component responsible for orchestrating the crawling process.
-    - **WebDownloader**: Fetches the HTML content of each page.
-    - **UriExtractor**: Extracts all valid URLs from the HTML content. It uses Html Agility Parser to extract Uris.
+- This project follows the Clean code architecture where we have following components:
+  - Executor (API / Interface layer)
+    - **Crawler Executor**: This is the main component responsible for orchestrating the crawling process.
     - **Background Service**: Manages concurrent crawling using parallel tasks.
+  - Domain (Core business logic - independent of any I/O operations.
+    - **UriExtractor**: Extracts all valid URLs from the HTML content. It uses Html Agility Parser to extract Uris.
+  - Infrastructure - Contains the I/O operations - HttpClient
+    - **WebDownloader**: Fetches the HTML content of each page.
 
 ### Fault Tolerance
 
@@ -103,9 +110,9 @@ The application can be deployed on any Kubernetes cluster (AKS, EKS, etc.).
 
 ### Observability Tools
 
-- **Log Collection**: Tools like Datadog or Kibana can gather logs from the Kubernetes PODs.
+- **Log Collection**: Tools like Datadog or Kibana (elastic-search) can gather logs from the Kubernetes PODs.
 - **Metrics & Alerts**: Prometheus and Grafana can monitor the health of PODs and clusters, along with setting up alerts for threshold breaches.
-- **Tracing**: Use tools like Honeycomb to trace requests across services for in-depth analysis.
+- **Tracing**: Open-telemetry tools like Honeycomb to trace requests across services for in-depth analysis.
 
 ### Persistent Storage
 
