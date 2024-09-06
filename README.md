@@ -81,7 +81,8 @@ This project follows the Clean code architecture where we have following compone
 - **Page Depth Limit**: You can impose a limit on the level of depth to crawl in BFS(breadh first search) manner.
 
 ### Data structures
-- Thread safe data structures are used to store the task details and to store the list of processed Uris in concurrent execution.
+- Thread safe data structures are used to store the background task details and to store the list of processed Uris facilitating the concurrent execution.
+
 ![crawler_system_architecture](crawler_system_architecture.png)
 
 ## Productionize the Application
