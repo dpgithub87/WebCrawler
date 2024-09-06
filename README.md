@@ -67,6 +67,7 @@ This project follows the Clean code architecture where we have following compone
     - **Background Service**: Manages concurrent crawling using parallel tasks.
   - Domain (Core business logic - independent of any I/O operations.
     - **UriExtractor**: Extracts all valid URLs from the HTML content. It uses Html Agility Parser to extract Uris.
+    - **UriValidator**: Validate the fetched Uris; check if it is having the same parent domain. 
   - Infrastructure - Contains the I/O operations - HttpClient
     - **WebDownloader**: Fetches the HTML content of each page.
 
