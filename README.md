@@ -54,34 +54,47 @@ docker cp web-crawler-container:/app/Output .
 
 **Note**: The first run may take some time as Docker downloads the base ASP.NET 8.0 and SDK images. Subsequent runs will be faster due to caching.
 
-## System Architecture
+## System Design
 
 ### Core Components
 
 - **Crawler Executor**: This is the main component responsible for orchestrating the crawling process.
     - **WebDownloader**: Fetches the HTML content of each page.
-    - **UriExtractor**: Extracts all valid URLs from the HTML content.
+    - **UriExtractor**: Extracts all valid URLs from the HTML content. It uses Html Agility Parser to extract Uris.
     - **Background Service**: Manages concurrent crawling using parallel tasks.
 
 ### Fault Tolerance
 
 - **Polly Library**: Configured with retries (3 times by default) using exponential backoff to handle transient errors.
 
+### Caching
+
+- **Distributed Caching**: Leverage Redis or similar services to cache upstream API responses.
+- **Page Depth Limit**: You can impose a limit on the level of depth to crawl in BFS(breadh first search) manner.
+
+### Data structures
+- Thread safe data structures are used to store the task details and to store the list of processed Uris in concurrent execution.
+
+## Productionize
+### Microservice Architecture
+
+- Extract the WebDownloader and UriExtractor as independent microservices to enhance scalability and efficiency.
+
+### Error Handling
+
+- Enhance error handling at each service layer, with a middleware for unified responses.
+- Implement DLQs (Dead Letter Queues) for failed processes during crawling.
+  
 ### Integration
 
 - **Message Queueing**: Communicates between microservices using systems like Azure Service Bus.
 - **API Communication**: Microservices can communicate via gRPC or REST as an alternative.
 
-### Caching
-
-- **Distributed Caching**: Leverage Redis or similar services to cache upstream API responses.
-- **Page Limit**: You can impose a limit on the number of pages based on size to control resource consumption.
-
-## CI/CD Pipeline
+### CI/CD Pipeline
 
 Use the `WebCrawler.Executor/Dockerfile` to build Docker images in your CI/CD pipeline. These images can then be pushed to cloud container registries and deployed to Kubernetes clusters (e.g., Azure Kubernetes Service - AKS).
 
-## Deployment & Monitoring
+### Deployment & Monitoring
 
 ### Kubernetes
 
@@ -93,6 +106,11 @@ The application can be deployed on any Kubernetes cluster (AKS, EKS, etc.).
 - **Metrics & Alerts**: Prometheus and Grafana can monitor the health of PODs and clusters, along with setting up alerts for threshold breaches.
 - **Tracing**: Use tools like Honeycomb to trace requests across services for in-depth analysis.
 
+### Persistent Storage
+
+- Store crawler state and results in a database for query-based analysis.
+- Enable the crawling process to be paused and resumed by storing state.
+
 ## Future Improvements
 
 ### Optimized Crawling
@@ -100,23 +118,14 @@ The application can be deployed on any Kubernetes cluster (AKS, EKS, etc.).
 - Introduce a queuing mechanism (e.g., URL Frontier) to manage the crawling process more efficiently.
 - Integrate `robots.txt` for honoring website-specific crawling rules.
 
-### Parallel Processing
+### Parallel Processing at Kubernetes layer
 
-- Implement the crawler-executor as a Cron job to monitor a queue for new sites, enabling parallel crawling.
+- Implement the crawler-executor as a Cron job or as a deployment pod to monitor a queue for new sites, enabling parallel crawling.
 
-### Microservice Architecture
 
-- Extract the WebDownloader and UriExtractor as independent microservices to enhance scalability and efficiency.
+### Advanced Content Extraction
+- Scraping Specific Content: Implement options to scrape and structure specific data such as titles, meta descriptions, headers, images, and other custom elements based on user-specified selectors or patterns.
 
-### Error Handling
-
-- Enhance error handling at each service layer, with a middleware for unified responses.
-- Implement DLQs (Dead Letter Queues) for failed processes during crawling.
-
-### Persistent Storage
-
-- Store crawler state and results in a database for query-based analysis.
-- Enable the crawling process to be paused and resumed by storing state.
 
 ### Improved Result Formatting
 
