@@ -22,7 +22,8 @@ This project follows the Clean code architecture where we have following compone
     - **UriExtractor**: Extracts all valid URLs from the HTML content. It uses Html Agility Parser to extract Uris.
     - **UriValidator**: Validate the fetched Uris; check if it is having the same parent domain. 
   - Infrastructure - Contains the I/O operations - HttpClient
-    - **WebDownloader**: Fetches the HTML content of each page.
+    - **WebPageDownloader**: Fetches the HTML content of each page.
+    - **WebPageRepository**: Caches the webpage downloaded for a specified amount of time. Uses IDistributed Redis Cache.
 
 ### Fault Tolerance
 
