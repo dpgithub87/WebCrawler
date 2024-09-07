@@ -6,7 +6,7 @@ A lightweight and efficient web crawler that recursively crawls through a websit
 
 - Crawls through websites, gathering sub-links.
 - Only crawls links within the parent domain.
-- Uri Extractor: To validate and standardize Uris.
+- Extracts URIs, validate and standardize them. Avoids circular references between pages.
 - Supports only HTML content downloads. 
 - Supports output in various formats such as JSON.
 
