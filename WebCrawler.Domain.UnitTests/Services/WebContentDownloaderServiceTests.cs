@@ -9,20 +9,20 @@ using WebCrawler.Infrastructure.Repository.Interfaces;
 
 namespace WebCrawler.Domain.UnitTests.Services;
 
-public class WebPageDownloaderServiceTests
+public class WebContentDownloaderServiceTests
 {
     private readonly IFixture _fixture;
 
-    public WebPageDownloaderServiceTests()
+    public WebContentDownloaderServiceTests()
     {
         _fixture = new Fixture().Customize(new AutoMoqCustomization());
     }
 
     [Theory, AutoMoqData]
     public async Task DownloadPage_ShouldReturnContent_WhenUriIsValid(
-        [Frozen] Mock<IWebPageRepository> webPageRepositoryMock,
-        [Frozen] Mock<ILogger<WebPageDownloaderService>> loggerMock,
-        WebPageDownloaderService service)
+        [Frozen] Mock<IWebContentRepository> webPageRepositoryMock,
+        [Frozen] Mock<ILogger<WebContentDownloaderService>> loggerMock,
+        WebContentDownloaderService service)
     {
         // Arrange
         var targetUri = new Uri("http://example.com");
@@ -33,7 +33,7 @@ public class WebPageDownloaderServiceTests
                              .ReturnsAsync(expectedContent);
 
         // Act
-        var result = await service.DownloadPage(targetUri, cancellationToken);
+        var result = await service.DownloadContent(targetUri, cancellationToken);
 
         // Assert
         Assert.Equal(expectedContent, result);
@@ -42,16 +42,16 @@ public class WebPageDownloaderServiceTests
 
     [Theory, AutoMoqData]
     public async Task DownloadPage_ShouldReturnNull_WhenUriIsInvalidScheme(
-        [Frozen] Mock<IWebPageRepository> webPageRepositoryMock,
-        [Frozen] Mock<ILogger<WebPageDownloaderService>> loggerMock,
-        WebPageDownloaderService service)
+        [Frozen] Mock<IWebContentRepository> webPageRepositoryMock,
+        [Frozen] Mock<ILogger<WebContentDownloaderService>> loggerMock,
+        WebContentDownloaderService service)
     {
         // Arrange
         var targetUri = new Uri("ftp://example.com");
         var cancellationToken = CancellationToken.None;
 
         // Act
-        var result = await service.DownloadPage(targetUri, cancellationToken);
+        var result = await service.DownloadContent(targetUri, cancellationToken);
 
         // Assert
         Assert.Null(result);
@@ -60,9 +60,9 @@ public class WebPageDownloaderServiceTests
 
     [Theory, AutoMoqData]
     public async Task DownloadPage_ShouldLogError_WhenExceptionIsThrown(
-        [Frozen] Mock<IWebPageRepository> webPageRepositoryMock,
-        [Frozen] Mock<ILogger<WebPageDownloaderService>> loggerMock,
-        WebPageDownloaderService service)
+        [Frozen] Mock<IWebContentRepository> webPageRepositoryMock,
+        [Frozen] Mock<ILogger<WebContentDownloaderService>> loggerMock,
+        WebContentDownloaderService service)
     {
         // Arrange
         var targetUri = new Uri("http://example.com");
@@ -73,7 +73,7 @@ public class WebPageDownloaderServiceTests
                              .ThrowsAsync(exception);
 
         // Act
-        var result = await service.DownloadPage(targetUri, cancellationToken);
+        var result = await service.DownloadContent(targetUri, cancellationToken);
 
         // Assert
         Assert.Null(result);

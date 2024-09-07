@@ -1,6 +1,7 @@
 using Microsoft.Extensions.Logging;
 using WebCrawler.Domain.Services.Interfaces;
 using WebCrawler.Infrastructure.Clients.Interfaces;
+using WebCrawler.Infrastructure.Models;
 using WebCrawler.Infrastructure.Repository.Interfaces;
 
 namespace WebCrawler.Domain.Services;
@@ -15,7 +16,7 @@ public class WebPageDownloaderService : IWebPageDownloaderService
         _webPageRepository = webPageRepository;
         _logger = logger;
     }
-   public async Task<string?> DownloadPage(Uri targetUri, CancellationToken cancellationToken)
+   public async Task<DownloadedContent?> DownloadPage(Uri targetUri, CancellationToken cancellationToken)
    {
        try
        {

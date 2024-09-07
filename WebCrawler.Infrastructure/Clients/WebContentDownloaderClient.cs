@@ -4,16 +4,17 @@ using Polly;
 using Polly.Retry;
 using WebCrawler.Infrastructure.Clients.Interfaces;
 using WebCrawler.Infrastructure.Config;
+using WebCrawler.Infrastructure.Models;
 
 namespace WebCrawler.Infrastructure.Clients;
 
-public class WebPageDownloaderClient : IWebPageDownloaderClient
+public class WebContentDownloaderClient : IWebContentDownloaderClient
 {
     private readonly HttpClient _httpClient;
-    private readonly ILogger<WebPageDownloaderClient> _logger;
+    private readonly ILogger<WebContentDownloaderClient> _logger;
     private readonly AsyncRetryPolicy<HttpResponseMessage> _retryPolicy;
 
-    public WebPageDownloaderClient(HttpClient httpClient, ILogger<WebPageDownloaderClient> logger, IOptions<InfrastructureOptions> options)
+    public WebContentDownloaderClient(HttpClient httpClient, ILogger<WebContentDownloaderClient> logger, IOptions<InfrastructureOptions> options)
     {
         _httpClient = httpClient;
         _logger = logger;
@@ -31,15 +32,21 @@ public class WebPageDownloaderClient : IWebPageDownloaderClient
                 });
     }
 
-    public async Task<string?> DownloadPageAsync(Uri targetUri)
+    public async Task<DownloadedContent?> DownloadPageAsync(Uri targetUri)
     {
         try
         {
             var response = await _retryPolicy.ExecuteAsync(() => _httpClient.GetAsync(targetUri));
 
             if (HandleFailureCases(targetUri, response)) return null;
+            
+            var downloadedContent = new DownloadedContent()
+            {
+                Content = await response.Content.ReadAsStringAsync(),
+                ContentType = response.Content.Headers.ContentType?.MediaType
+            };
 
-            return await response.Content.ReadAsStringAsync();
+            return downloadedContent ;
         }
         catch (Exception ex)
         {
@@ -55,15 +62,6 @@ public class WebPageDownloaderClient : IWebPageDownloaderClient
             _logger.LogError($"Failed to download page. Status code: {response.StatusCode}");
             return true;
         }
-
-        var contentType = response.Content.Headers.ContentType;
-        if (contentType == null || !contentType.MediaType!.Contains("text/html"))
-        {
-            _logger.LogInformation(
-                $"Content in url:{targetUri} has content type:{contentType}. This is non-html. Ignoring!");
-            return true;
-        }
-
         return false;
     }
 }

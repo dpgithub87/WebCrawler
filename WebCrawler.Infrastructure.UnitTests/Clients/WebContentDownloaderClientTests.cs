@@ -7,23 +7,23 @@ using WebCrawler.Infrastructure.Clients;
 using WebCrawler.Infrastructure.Config;
 
 namespace WebCrawler.Infrastructure.UnitTests.Clients;
-public class WebPageDownloaderClientTests
+public class WebContentDownloaderClientTests
 {
 private readonly Mock<HttpMessageHandler> _httpMessageHandlerMock;
 private readonly HttpClient _httpClient;
-private readonly Mock<ILogger<WebPageDownloaderClient>> _loggerMock;
-private WebPageDownloaderClient _client;
+private readonly Mock<ILogger<WebContentDownloaderClient>> _loggerMock;
+private WebContentDownloaderClient _client;
 
- public WebPageDownloaderClientTests()
+ public WebContentDownloaderClientTests()
     {
         _httpMessageHandlerMock = new Mock<HttpMessageHandler>();
         _httpClient = new HttpClient(_httpMessageHandlerMock.Object);
-        _loggerMock = new Mock<ILogger<WebPageDownloaderClient>>();
+        _loggerMock = new Mock<ILogger<WebContentDownloaderClient>>();
        
         var infrastructureOptionsValue = new InfrastructureOptions { PollyRetryCount = 3 };
         var infrastructureOptions = Options.Create(infrastructureOptionsValue);
         
-        _client = new WebPageDownloaderClient(_httpClient, _loggerMock.Object, infrastructureOptions);
+        _client = new WebContentDownloaderClient(_httpClient, _loggerMock.Object, infrastructureOptions);
     }
 
     [Fact]

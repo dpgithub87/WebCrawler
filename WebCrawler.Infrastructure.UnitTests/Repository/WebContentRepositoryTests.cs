@@ -13,22 +13,22 @@ using WebCrawler.Infrastructure.UnitTests.Helpers;
 
 namespace WebCrawler.Infrastructure.UnitTests.Repository;
 
-public class WebPageRepositoryTests
+public class WebContentRepositoryTests
 {
     private readonly IFixture _fixture;
 
-    public WebPageRepositoryTests()
+    public WebContentRepositoryTests()
     {
         _fixture = new Fixture().Customize(new AutoMoqCustomization());
     }
 
     [Theory, AutoMoqData]
     public async Task GetWebPageAsync_ShouldReturnCachedContent_WhenCacheHit(
-        [Frozen] Mock<IWebPageDownloaderClient> webPageDownloaderClientMock,
+        [Frozen] Mock<IWebContentDownloaderClient> webPageDownloaderClientMock,
         [Frozen] Mock<IDistributedCacheWrapper> cacheMock,
-        [Frozen] Mock<ILogger<WebPageRepository>> loggerMock,
+        [Frozen] Mock<ILogger<WebContentRepository>> loggerMock,
         [Frozen] IOptions<InfrastructureOptions> options,
-        WebPageRepository repository)
+        WebContentRepository repository)
     {
         // Arrange
         var targetUri = new Uri("http://example.com");
@@ -50,9 +50,9 @@ public class WebPageRepositoryTests
 
     [Theory, AutoMoqData]
     public async Task GetWebPageAsync_ShouldReturnDownloadedContent_WhenCacheMiss(
-        [Frozen] Mock<IWebPageDownloaderClient> webPageDownloaderClientMock,
+        [Frozen] Mock<IWebContentDownloaderClient> webPageDownloaderClientMock,
         [Frozen] Mock<IDistributedCacheWrapper> cacheMock,
-        [Frozen] Mock<ILogger<WebPageRepository>> loggerMock
+        [Frozen] Mock<ILogger<WebContentRepository>> loggerMock
        )
     {
         // Arrange
@@ -73,7 +73,7 @@ public class WebPageRepositoryTests
                                    .ReturnsAsync(downloadedContent);
 
         // Act
-        var repository = new WebPageRepository(webPageDownloaderClientMock.Object, cacheMock.Object, loggerMock.Object, infrastructureSettings);
+        var repository = new WebContentRepository(webPageDownloaderClientMock.Object, cacheMock.Object, loggerMock.Object, infrastructureSettings);
         var result = await repository.GetWebPageAsync(targetUri, cancellationToken);
 
         // Assert
@@ -85,11 +85,11 @@ public class WebPageRepositoryTests
 
     [Theory, AutoMoqData]
     public async Task GetWebPageAsync_ShouldReturnNull_WhenDownloadFails(
-        [Frozen] Mock<IWebPageDownloaderClient> webPageDownloaderClientMock,
+        [Frozen] Mock<IWebContentDownloaderClient> webPageDownloaderClientMock,
         [Frozen] Mock<IDistributedCacheWrapper> cacheMock,
-        [Frozen] Mock<ILogger<WebPageRepository>> loggerMock,
+        [Frozen] Mock<ILogger<WebContentRepository>> loggerMock,
         [Frozen] IOptions<InfrastructureOptions> options,
-        WebPageRepository repository)
+        WebContentRepository repository)
     {
         // Arrange
         var targetUri = new Uri("http://example.com");
