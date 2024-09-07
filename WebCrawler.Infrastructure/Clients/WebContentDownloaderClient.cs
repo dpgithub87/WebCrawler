@@ -32,7 +32,7 @@ public class WebContentDownloaderClient : IWebContentDownloaderClient
                 });
     }
 
-    public async Task<DownloadedContent?> DownloadPageAsync(Uri targetUri)
+    public async Task<WebContent?> DownloadAsync(Uri targetUri)
     {
         try
         {
@@ -40,7 +40,7 @@ public class WebContentDownloaderClient : IWebContentDownloaderClient
 
             if (HandleFailureCases(targetUri, response)) return null;
             
-            var downloadedContent = new DownloadedContent()
+            var downloadedContent = new WebContent()
             {
                 Content = await response.Content.ReadAsStringAsync(),
                 ContentType = response.Content.Headers.ContentType?.MediaType

@@ -12,28 +12,29 @@ namespace WebCrawler.Executor.Services
 {
     public class UriProcessorService : IUriProcessorService
     {
-        private readonly IWebPageDownloaderService _webDownloader;
-        private readonly IUriExtractorService _uriExtractor;
+        private readonly IWebContentDownloaderService _webDownloader;
         private readonly ConcurrentDictionary<Uri, bool> _processedUris;
         private readonly BlockingCollection<CrawlTask> _tasks;
         private readonly ILogger<UriProcessorService> _logger;
         private readonly ICrawlResultsHandlerFactory _crawlResultsHandlerFactory;
         private readonly CrawlOptions _crawlOptions;
+        private readonly IDownloadedContentHandlerFactory _contentHandlerFactory;
+        
 
-        public UriProcessorService(
-            IWebPageDownloaderService webDownloader,
-            IUriExtractorService uriExtractor,
+        public UriProcessorService(IWebContentDownloaderService webDownloader,
             ConcurrentDictionary<Uri, bool> processedUris,
             BlockingCollection<CrawlTask> tasks,
             ILogger<UriProcessorService> logger,
-            ICrawlResultsHandlerFactory crawlResultsHandlerFactory, IOptions<CrawlOptions> crawlSettings)
+            ICrawlResultsHandlerFactory crawlResultsHandlerFactory,
+            IDownloadedContentHandlerFactory contentHandlerFactory,
+            IOptions<CrawlOptions> crawlSettings)
         {
             _webDownloader = webDownloader;
-            _uriExtractor = uriExtractor;
             _processedUris = processedUris;
             _tasks = tasks;
             _logger = logger;
             _crawlResultsHandlerFactory = crawlResultsHandlerFactory;
+            _contentHandlerFactory = contentHandlerFactory;
             _crawlOptions = crawlSettings.Value;
         }
 
@@ -44,7 +45,7 @@ namespace WebCrawler.Executor.Services
             {
                 task.Status = CrawlTaskStatus.Processing;
                 
-                var (success, links) = await DownloadPageAndExtractUris(task, cancellationToken);
+                var (success, links) = await DownloadContentAndCrawl(task, cancellationToken);
 
                 await AddDelayForPoliteness(task, cancellationToken);
                 
@@ -67,17 +68,18 @@ namespace WebCrawler.Executor.Services
             }
         }
 
-        private async Task<(bool success, List<Uri>? links)> DownloadPageAndExtractUris(CrawlTask task, CancellationToken cancellationToken)
+        private async Task<(bool success, List<Uri>? links)> DownloadContentAndCrawl(CrawlTask task, CancellationToken cancellationToken)
         {
-            var htmlContent = await _webDownloader.DownloadPage(task.Uri, cancellationToken);
-            if (htmlContent == null)
+            var webContent = await _webDownloader.DownloadContent(task.Uri, cancellationToken);
+            if (webContent == null)
             {
                 task.Status = CrawlTaskStatus.Failed;
                 return (false, null);
             }
-
-            var links = _uriExtractor.ExtractValidUrls(htmlContent, task.Uri);
-            return (true, links.ToList());
+      
+            var contentType = webContent.ContentType; 
+            var handler = _contentHandlerFactory.CreateHandler(contentType!);
+            return await handler.HandleContentAsync(webContent, task.Uri);
         }
         
         private static async Task AddDelayForPoliteness(CrawlTask task, CancellationToken cancellationToken)

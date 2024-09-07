@@ -25,6 +25,12 @@ This project follows the Clean code architecture where we have following compone
     - **WebPageDownloader**: Fetches the HTML content of each page.
     - **WebPageRepository**: Caches the webpage downloaded for a specified amount of time. Uses IDistributed Redis Cache.
 
+### Design Patterns
+- Factory Pattern:
+  The Factory Pattern is used to dynamically create handlers for downloaded content based on response headers. Although it currently supports only HTML content, it's designed for extensibility to accommodate other formats in the future. Additionally, the pattern is applied to generate CrawlResultHandlers based on the desired output format.
+- Repository Pattern:
+  Utilized to separate the client layer from the underlying cache implementation, providing abstraction and flexibility.
+
 ### Fault Tolerance
 
 - **Polly Library**: Configured with retries (3 times by default) using exponential backoff to handle transient errors.
@@ -135,6 +141,11 @@ The application can be deployed on any Kubernetes cluster (AKS, EKS, etc.).
 - Rate Limiting Rules per Website: Implement rate limiting to avoid overloading the target website and to comply with its usage policies. This can be done using targeted queues with specific rules tied to each website.
   - Politeness queue: Mapping between the hostname and the queue to have the tailored rules.
 - Distributed Crawling: Have the crawler deployed in different geographical locations which will help in reducing the latency.
+
+### Maintainability
+- Implement a centralized logging system to monitor the application's health and performance.
+- Create domain specific objects to decouple the business logic from the infrastructure. 
+  - Separate mappers for converting the domain objects to Infra objects.
 
 ### Fault tolerance
 - Implement Circuit breaker pattern to handle any system failures gracefully.

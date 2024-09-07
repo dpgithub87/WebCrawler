@@ -6,17 +6,17 @@ using WebCrawler.Infrastructure.Repository.Interfaces;
 
 namespace WebCrawler.Domain.Services;
 
-public class WebPageDownloaderService : IWebPageDownloaderService
+public class WebContentDownloaderService : IWebContentDownloaderService
 {
-    private readonly IWebPageRepository _webPageRepository;
-    private readonly ILogger<WebPageDownloaderService> _logger;
+    private readonly IWebContentRepository _webContentRepository;
+    private readonly ILogger<WebContentDownloaderService> _logger;
 
-    public WebPageDownloaderService(IWebPageRepository webPageRepository, ILogger<WebPageDownloaderService> logger)
+    public WebContentDownloaderService(IWebContentRepository webPageRepository, ILogger<WebContentDownloaderService> logger)
     {
-        _webPageRepository = webPageRepository;
+        _webContentRepository = webPageRepository;
         _logger = logger;
     }
-   public async Task<DownloadedContent?> DownloadPage(Uri targetUri, CancellationToken cancellationToken)
+   public async Task<WebContent?> DownloadContent(Uri targetUri, CancellationToken cancellationToken)
    {
        try
        {
@@ -25,7 +25,7 @@ public class WebPageDownloaderService : IWebPageDownloaderService
                return null;
            }
 
-           return await _webPageRepository.GetWebPageAsync(targetUri, cancellationToken);
+           return await _webContentRepository.GetWebPageAsync(targetUri, cancellationToken);
        }
        catch (Exception e)
        {

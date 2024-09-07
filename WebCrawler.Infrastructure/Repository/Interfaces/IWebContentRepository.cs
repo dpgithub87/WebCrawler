@@ -2,7 +2,7 @@ using WebCrawler.Infrastructure.Models;
 
 namespace WebCrawler.Infrastructure.Repository.Interfaces;
 
-public interface IWebPageRepository
+public interface IWebContentRepository
 {
-    Task<DownloadedContent?> GetWebPageAsync(Uri targetUri, CancellationToken cancellationToken);
+    Task<WebContent?> GetWebPageAsync(Uri targetUri, CancellationToken cancellationToken);
 }

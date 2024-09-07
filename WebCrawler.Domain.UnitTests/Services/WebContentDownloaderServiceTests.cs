@@ -5,6 +5,7 @@ using Microsoft.Extensions.Logging;
 using Moq;
 using WebCrawler.Domain.Services;
 using WebCrawler.Domain.UnitTests.Helpers;
+using WebCrawler.Infrastructure.Models;
 using WebCrawler.Infrastructure.Repository.Interfaces;
 
 namespace WebCrawler.Domain.UnitTests.Services;
@@ -27,7 +28,11 @@ public class WebContentDownloaderServiceTests
         // Arrange
         var targetUri = new Uri("http://example.com");
         var cancellationToken = CancellationToken.None;
-        var expectedContent = "<html></html>";
+        var expectedContent = new WebContent()
+        {
+            Content = "<html></html>",
+            ContentType = "text/html"
+        };
 
         webPageRepositoryMock.Setup(x => x.GetWebPageAsync(targetUri, cancellationToken))
                              .ReturnsAsync(expectedContent);

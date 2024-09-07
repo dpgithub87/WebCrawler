@@ -45,11 +45,11 @@ private WebContentDownloaderClient _client;
             .ReturnsAsync(responseMessage);
         
         // Act
-        var result = await _client.DownloadPageAsync(targetUri);
+        var result = await _client.DownloadAsync(targetUri);
 
         // Assert
         Assert.NotNull(result);
-        Assert.Equal("<html></html>", result);
+        Assert.Equal("<html></html>", result.Content);
     }
 
     [Fact]
@@ -69,14 +69,14 @@ private WebContentDownloaderClient _client;
         
         
         // Act
-        var result = await _client.DownloadPageAsync(targetUri);
+        var result = await _client.DownloadAsync(targetUri);
 
         // Assert
         Assert.Null(result);
     }
 
     [Fact]
-    public async Task DownloadPageAsync_NonHtmlContentType_ReturnsNull()
+    public async Task DownloadPageAsync_NonHtmlContentType_ReturnsContent()
     {
         // Arrange
         var targetUri = new Uri("http://example.com");
@@ -94,9 +94,9 @@ private WebContentDownloaderClient _client;
             .ReturnsAsync(responseMessage);
 
         // Act
-        var result = await _client.DownloadPageAsync(targetUri);
+        var result = await _client.DownloadAsync(targetUri);
 
         // Assert
-        Assert.Null(result);
+        Assert.NotNull(result);
     }
 }

@@ -1,4 +1,8 @@
+using System.Text.Json;
 using Microsoft.Extensions.Caching.Distributed;
+using Microsoft.Extensions.Options;
+using WebCrawler.Infrastructure.Config;
+using WebCrawler.Infrastructure.Models;
 using WebCrawler.Infrastructure.Repository.Interfaces;
 
 namespace WebCrawler.Infrastructure.Repository;
@@ -6,19 +10,27 @@ namespace WebCrawler.Infrastructure.Repository;
 public class DistributedCacheWrapper : IDistributedCacheWrapper
 {
     private readonly IDistributedCache _distributedCache;
+    private readonly InfrastructureOptions _options;
 
-    public DistributedCacheWrapper(IDistributedCache distributedCache)
+    public DistributedCacheWrapper(IDistributedCache distributedCache, IOptions<InfrastructureOptions> options)
     {
         _distributedCache = distributedCache;
+        _options = options.Value;
     }
 
-    public Task<string?> GetStringAsync(string key, CancellationToken token)
+    public async Task<WebContent?> GetDownloadedContentAsync(string key, CancellationToken cancellationToken)
     {
-        return _distributedCache.GetStringAsync(key, token);
+        var cachedBytes = await _distributedCache.GetAsync(key, cancellationToken);
+        return cachedBytes == null ? null : JsonSerializer.Deserialize<WebContent>(cachedBytes);
     }
 
-    public Task SetStringAsync(string key, string value, DistributedCacheEntryOptions options, CancellationToken token)
+    public async Task SetDownloadedContentAsync(string key, WebContent data, CancellationToken cancellationToken)
     {
-        return _distributedCache.SetStringAsync(key, value, options, token);
+        var dataBytes = JsonSerializer.SerializeToUtf8Bytes(data);
+      
+        await _distributedCache.SetAsync(key, dataBytes, new DistributedCacheEntryOptions
+        {
+            AbsoluteExpirationRelativeToNow = TimeSpan.FromSeconds(_options.CacheExpirySeconds!.Value)
+        }, cancellationToken);
     }
 }

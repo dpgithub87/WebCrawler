@@ -1,6 +1,6 @@
 namespace WebCrawler.Infrastructure.Models;
 
-public class DownloadedContent
+public class WebContent
 {
     public string? Content { get; set; }
     public string? ContentType { get; set; }

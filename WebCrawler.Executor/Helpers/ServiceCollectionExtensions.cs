@@ -24,7 +24,7 @@ public static class ServiceCollectionExtensions
     {
         ConfigureThreadSafeCollections(services);
         ConfigureWebPageDownloader(services);
-        ConfigureUriExtractor(services);
+        ConfigureDownloadedContentHandlers(services);
         ConfigureCrawlResultsHandler(services);
         
         services.AddHostedService<CrawlerBackgroundService>();
@@ -41,19 +41,20 @@ public static class ServiceCollectionExtensions
     
     private static void ConfigureWebPageDownloader(IServiceCollection services)
     {
-        services.AddHttpClient<IWebPageDownloaderClient, WebPageDownloaderClient>();
-        services.AddScoped<IWebPageDownloaderService, WebPageDownloaderService>();
-
-        services.AddScoped<IWebPageRepository, WebPageRepository>();
+        services.AddHttpClient<IWebContentDownloaderClient, WebContentDownloaderClient>();
+        services.AddScoped<IWebContentDownloaderService, WebContentDownloaderService>();
+        services.AddScoped<IWebContentRepository, WebContentRepository>();
         services.AddScoped<IDistributedCacheWrapper, DistributedCacheWrapper>();
     }
     
-    private static void ConfigureUriExtractor(IServiceCollection services)
+    private static void ConfigureDownloadedContentHandlers(IServiceCollection services)
     {
         services.AddScoped<IUriValidator, UriValidator>();
-        services.AddScoped<IUriProcessorService, UriProcessorService>();
         services.AddScoped<IUriExtractorService, UriExtractorService>();
         services.AddScoped<IHtmlParser, HtmlAgilityParser>();
+        services.AddScoped<IDownloadedContentHandlerFactory, DownloadedContentHandlerFactory>();
+        services.AddScoped<IDownloadedContentHandler, HtmlContentHandler>();
+        services.AddScoped<IUriProcessorService, UriProcessorService>();
     }
     
     private static void ConfigureCrawlResultsHandler(IServiceCollection services)

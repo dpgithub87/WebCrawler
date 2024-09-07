@@ -1,6 +1,6 @@
 namespace WebCrawler.Domain.Services.Interfaces;
 
-public class IDownloadedContentHandlerFactory
+public interface IDownloadedContentHandlerFactory
 {
-    
+    IDownloadedContentHandler CreateHandler(string contentType);
 }

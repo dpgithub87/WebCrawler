@@ -6,20 +6,20 @@ using WebCrawler.Infrastructure.Repository.Interfaces;
 
 namespace WebCrawler.Infrastructure.Repository;
 
-public class WebPageRepository : IWebPageRepository
+public class WebContentRepository : IWebContentRepository
 {
-    private readonly IWebPageDownloaderClient _webPageDownloaderClient;
+    private readonly IWebContentDownloaderClient _webContentDownloaderClient;
     private readonly IDistributedCacheWrapper _cache;
-    private readonly ILogger<WebPageRepository> _logger;
+    private readonly ILogger<WebContentRepository> _logger;
 
-    public WebPageRepository(IWebPageDownloaderClient webPageDownloaderClient, IDistributedCacheWrapper cache, ILogger<WebPageRepository> logger)
+    public WebContentRepository(IWebContentDownloaderClient webContentDownloaderClient, IDistributedCacheWrapper cache, ILogger<WebContentRepository> logger)
     {
-        _webPageDownloaderClient = webPageDownloaderClient;
+        _webContentDownloaderClient = webContentDownloaderClient;
         _cache = cache;
         _logger = logger;
     }
 
-    public async Task<DownloadedContent?> GetWebPageAsync(Uri targetUri, CancellationToken cancellationToken)
+    public async Task<WebContent?> GetWebPageAsync(Uri targetUri, CancellationToken cancellationToken)
     {
         var cacheKey = $"WebPage_{targetUri.AbsoluteUri}";
         var cachedContent = await _cache.GetDownloadedContentAsync(cacheKey, cancellationToken);
@@ -30,7 +30,7 @@ public class WebPageRepository : IWebPageRepository
             return cachedContent;
         }
         
-        var content = await _webPageDownloaderClient.DownloadPageAsync(targetUri);
+        var content = await _webContentDownloaderClient.DownloadAsync(targetUri);
         if (content != null)
         {
             await _cache.SetDownloadedContentAsync(cacheKey, content, cancellationToken);

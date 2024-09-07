@@ -4,6 +4,6 @@ namespace WebCrawler.Infrastructure.Clients.Interfaces;
 
 public interface IWebContentDownloaderClient
 {    
-    Task<DownloadedContent?> DownloadPageAsync(Uri targetUri);
+    Task<WebContent?> DownloadAsync(Uri targetUri);
     
 }
