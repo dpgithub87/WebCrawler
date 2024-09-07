@@ -121,8 +121,9 @@ The application can be deployed on any Kubernetes cluster (AKS, EKS, etc.).
 
 ### Persistent Storage
 
+- Store the Downloaded HTML file in an object based storage such as Amazon S3.
 - Store crawler state and results in a database for query-based analysis.
-- Enable the crawling process to be paused and resumed by storing state.
+  - Enable the crawling process to be paused and resumed by storing state.
 
 ## Future Improvements
 
