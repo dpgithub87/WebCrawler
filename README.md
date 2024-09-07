@@ -29,7 +29,7 @@ git clone https://github.com/dpgithub87/WebCrawler.git
 
 To run the crawler, navigate to the root directory and execute the appropriate command in your terminal.
 ```bash
-dotnet run --project WebCrawler.Executor/WebCrawler.Executor.csproj --url "https://bing.com" --maxdepth 1 --format "json"
+dotnet run --project WebCrawler.Executor/WebCrawler.Executor.csproj --url "https://www.google.com" --maxdepth 1 --format "json"
 ```
 **Output**: The results will be saved in the `Output` folder located in `WebCrawler/WebCrawler.Executor/Output`.
 
@@ -43,18 +43,17 @@ docker build -t webcrawler-executor:v1.0 .
 ```
 2. Run the Docker container.
 ```bash
-docker run --name web-crawler-container -it -e ASPNETCORE_ENVIRONMENT=Development webcrawler-executor:v1.0 --url "https://bing.com" --maxdepth 1 --format "json"
+docker run --name web-crawler-container -it -e ASPNETCORE_ENVIRONMENT=Development webcrawler-executor:v1.0 --url "https://www.google.com" --maxdepth 1 --format "json"
 ```
 3. Retrieve the output from the Docker container to your local machine.
 ```bash
 docker cp web-crawler-container:/app/Output .
 ```
-**Docker Arguments Explanation**:
+**Crawler Arguments Explanation**:
+- **URL to Crawl**: url - A comma separated list of initial URLs to crawl.
+- **Page Depth Limit**: maxdepth - You can impose a limit on the level of depth to crawl in BFS(breadh first search) manner.
+- **Output Format**: format - Format of the output export file, currently supports JSON/CSV.
 
-- `-t`: Tag for naming the image.
-- `--rm`: Automatically remove the container once it stops.
-- `-d`: Run container in detached mode.
-- `-it`: Interactive terminal to keep STDIN open.
 
 **Note**: The first run may take some time as Docker downloads the base ASP.NET 8.0 and SDK images. Subsequent runs will be faster due to caching.
 
@@ -79,7 +78,6 @@ This project follows the Clean code architecture where we have following compone
 ### Caching
 
 - **Distributed Caching**: Leverage Redis or similar services to cache upstream API responses.
-- **Page Depth Limit**: You can impose a limit on the level of depth to crawl in BFS(breadh first search) manner.
 
 ### Data structures
 - Thread safe data structures are used to store the background task details and to store the list of processed Uris facilitating the concurrent execution.
