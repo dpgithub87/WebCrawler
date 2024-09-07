@@ -6,9 +6,9 @@ A lightweight and efficient web crawler that recursively crawls through a websit
 
 - Crawls through websites, gathering sub-links.
 - Only crawls links within the parent domain.
+- Supports only HTML content downloads. 
 - Supports output in various formats such as JSON.
-- Can be run locally or within a Docker container.
-- Supports only HTML content
+
 
 ## Prerequisites
 
