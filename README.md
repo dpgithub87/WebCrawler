@@ -135,6 +135,10 @@ The application can be deployed on any Kubernetes cluster (AKS, EKS, etc.).
 - Rate Limiting Rules per Website: Implement rate limiting to avoid overloading the target website and to comply with its usage policies. This can be done using targeted queues with specific rules tied to each website.
 - Distributed Crawling: Have the crawler deployed in different geographical locations which will help in reducing the latency.
 
+### Fault tolerance
+- Implement Circuit breaker pattern to handle any system failures gracefully.
+- Ensure no singlge point of failure in the system by replicating the components where needed.
+
 ### Extensibility
 
 - Advanced Content Extraction: Scraping Specific Content: Implement options to scrape and structure specific data such as titles, meta descriptions, headers, images, and other custom elements based on user-specified selectors or patterns.
