@@ -134,7 +134,7 @@ The application can be deployed on any Kubernetes cluster (AKS, EKS, etc.).
 - Introduce a queuing mechanism (e.g., URL Frontier) to manage the crawling process more efficiently.
 - Integrate `robots.txt` for honoring website-specific crawling rules.
 - Rate Limiting Rules per Website: Implement rate limiting to avoid overloading the target website and to comply with its usage policies. This can be done using targeted queues with specific rules tied to each website.
-  - Politness queue: Mapping between the hostname and the queue to have the tailored rules.
+  - Politeness queue: Mapping between the hostname and the queue to have the tailored rules.
 - Distributed Crawling: Have the crawler deployed in different geographical locations which will help in reducing the latency.
 
 ### Fault tolerance
