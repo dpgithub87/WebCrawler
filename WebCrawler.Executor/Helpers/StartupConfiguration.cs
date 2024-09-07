@@ -2,7 +2,7 @@ using CommandLine;
 using Microsoft.Extensions.Configuration;
 using WebCrawler.Executor.Config;
 
-namespace WebCrawler.Executor.Utilities;
+namespace WebCrawler.Executor.Helpers;
 
 public static class StartupConfiguration
 {

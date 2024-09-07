@@ -16,7 +16,7 @@ using WebCrawler.Infrastructure.Config;
 using WebCrawler.Infrastructure.Repository;
 using WebCrawler.Infrastructure.Repository.Interfaces;
 
-namespace WebCrawler.Executor.Utilities;
+namespace WebCrawler.Executor.Helpers;
 
 public static class ServiceCollectionExtensions
 {
@@ -45,6 +45,7 @@ public static class ServiceCollectionExtensions
         services.AddScoped<IWebPageDownloaderService, WebPageDownloaderService>();
 
         services.AddScoped<IWebPageRepository, WebPageRepository>();
+        services.AddScoped<IDistributedCacheWrapper, DistributedCacheWrapper>();
     }
     
     private static void ConfigureUriExtractor(IServiceCollection services)

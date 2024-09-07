@@ -1,6 +1,6 @@
 ﻿using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using WebCrawler.Executor.Utilities;
+using WebCrawler.Executor.Helpers;
 
 var host = CreateHostBuilder(args).Build();
 

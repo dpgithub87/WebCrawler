@@ -1,0 +1,19 @@
+[
+  {
+    "uri": "https://www.google.com",
+    "parentUri": null,
+    "links": [
+      "https://www.google.com/imghp?hl=en\u0026tab=wi",
+      "https://www.google.com/preferences?hl=en",
+      "https://www.google.com/advanced_search?hl=en-GB\u0026amp;authuser=0",
+      "https://www.google.com/intl/en/ads/",
+      "https://www.google.com/services/",
+      "https://www.google.com/intl/en/about.html",
+      "https://www.google.com/setprefdomain?prefdom=GB\u0026amp;prev=https://www.google.co.uk/\u0026amp;sig=K_sQ04mwO1tkY0jIC-wFTbEI-pY9c%3D",
+      "https://www.google.com/intl/en/policies/privacy/",
+      "https://www.google.com/intl/en/policies/terms/"
+    ],
+    "crawlTime": "00:00:00.2631695",
+    "level": 0
+  }
+]

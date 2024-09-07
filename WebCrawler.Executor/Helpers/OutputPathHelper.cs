@@ -1,4 +1,4 @@
-namespace WebCrawler.Executor.Utilities;
+namespace WebCrawler.Executor.Helpers;
 
 public static class OutputPathHelper
 {

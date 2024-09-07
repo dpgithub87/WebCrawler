@@ -4,9 +4,9 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using WebCrawler.Executor.Config;
+using WebCrawler.Executor.Helpers;
 using WebCrawler.Executor.Models;
 using WebCrawler.Executor.Services.Interfaces;
-using WebCrawler.Executor.Utilities;
 
 namespace WebCrawler.Executor
 {

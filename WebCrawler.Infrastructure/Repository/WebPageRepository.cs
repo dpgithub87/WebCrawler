@@ -10,11 +10,11 @@ namespace WebCrawler.Infrastructure.Repository;
 public class WebPageRepository : IWebPageRepository
 {
     private readonly IWebPageDownloaderClient _webPageDownloaderClient;
-    private readonly IDistributedCache _cache;
+    private readonly IDistributedCacheWrapper _cache;
     private readonly ILogger<WebPageRepository> _logger;
     private readonly InfrastructureOptions _options;
 
-    public WebPageRepository(IWebPageDownloaderClient webPageDownloaderClient, IDistributedCache cache, ILogger<WebPageRepository> logger, IOptions<InfrastructureOptions> options)
+    public WebPageRepository(IWebPageDownloaderClient webPageDownloaderClient, IDistributedCacheWrapper cache, ILogger<WebPageRepository> logger, IOptions<InfrastructureOptions> options)
     {
         _webPageDownloaderClient = webPageDownloaderClient;
         _cache = cache;
