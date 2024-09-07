@@ -46,8 +46,7 @@ namespace WebCrawler.Executor.Services
                 
                 var (success, links) = await DownloadPageAndExtractUris(task, cancellationToken);
 
-                if (task.DepthLevel > 0)
-                    await Task.Delay(1000, cancellationToken); // Polite delay to avoid spamming the web server
+                await AddDelayForPoliteness(task, cancellationToken);
                 
                 if (!success) return;
                
@@ -67,7 +66,7 @@ namespace WebCrawler.Executor.Services
                 stopwatch.Stop();
             }
         }
-        
+
         private async Task<(bool success, List<Uri>? links)> DownloadPageAndExtractUris(CrawlTask task, CancellationToken cancellationToken)
         {
             var htmlContent = await _webDownloader.DownloadPage(task.Uri, cancellationToken);
@@ -80,6 +79,13 @@ namespace WebCrawler.Executor.Services
             var links = _uriExtractor.ExtractValidUrls(htmlContent, task.Uri);
             return (true, links.ToList());
         }
+        
+        private static async Task AddDelayForPoliteness(CrawlTask task, CancellationToken cancellationToken)
+        {
+            if (task.DepthLevel > 0)
+                await Task.Delay(1000, cancellationToken);
+        }
+        
         private async Task AddBackgroundTasksToCrawlLinksInBfsOrder(CrawlTask parentTask, CancellationToken cancellationToken, List<Uri> links)
         {
             _processedUris.TryAdd(parentTask.Uri, true);
