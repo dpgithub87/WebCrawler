@@ -30,6 +30,8 @@ public class CsvCrawlResultsHandler : ICrawlResultsHandler
             await using var stream = new FileStream(filePath, FileMode.Append, FileAccess.Write, FileShare.ReadWrite);
             await using var writer = new StreamWriter(stream);
             await using var csv = new CsvWriter(writer, config);
+            
+            csv.Context.RegisterClassMap<CsvCrawlResultMap>();
             await csv.WriteRecordsAsync(crawlResults);
         }
         finally

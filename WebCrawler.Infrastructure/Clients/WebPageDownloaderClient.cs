@@ -18,7 +18,7 @@ public class WebPageDownloaderClient : IWebPageDownloaderClient
         _httpClient = httpClient;
         _logger = logger;
         _httpClient.DefaultRequestHeaders.Clear();
-        _httpClient.DefaultRequestHeaders.Add("User-Agent", "Other");
+        _httpClient.DefaultRequestHeaders.Add("User-Agent", "CrawlerBot/1.0");
 
         // Define a Polly retry policy
         _retryPolicy = Policy
