@@ -10,6 +10,32 @@ A lightweight and efficient web crawler that recursively crawls through a websit
 - Supports only HTML content downloads. 
 - Supports output in various formats such as JSON.
 
+## System Design
+
+### Core Components
+
+This project follows the Clean code architecture where we have following components:
+  - Executor (API / Interface layer)
+    - **Crawler Executor**: This is the main component responsible for orchestrating the crawling process.
+    - **Background Service**: Manages concurrent crawling using parallel tasks.
+  - Domain (Core business logic - independent of any I/O operations.
+    - **UriExtractor**: Extracts all valid URLs from the HTML content. It uses Html Agility Parser to extract Uris.
+    - **UriValidator**: Validate the fetched Uris; check if it is having the same parent domain. 
+  - Infrastructure - Contains the I/O operations - HttpClient
+    - **WebDownloader**: Fetches the HTML content of each page.
+
+### Fault Tolerance
+
+- **Polly Library**: Configured with retries (3 times by default) using exponential backoff to handle transient errors.
+
+### Caching
+
+- **Distributed Caching**: Leverage Redis or similar services to cache upstream API responses.
+
+### Data structures
+- Thread safe data structures are used to store the background task details and to store the list of processed Uris facilitating the concurrent execution.
+
+![crawler_system_architecture](crawler_system_architecture.png)
 
 ## Prerequisites
 
@@ -55,35 +81,7 @@ docker cp web-crawler-container:/app/Output .
 - **Page Depth Limit**: maxdepth - You can impose a limit on the level of depth to crawl in BFS(breadh first search) manner.
 - **Output Format**: format - Format of the output export file, currently supports JSON/CSV.
 
-
 **Note**: The first run may take some time as Docker downloads the base ASP.NET 8.0 and SDK images. Subsequent runs will be faster due to caching.
-
-## System Design
-
-### Core Components
-
-This project follows the Clean code architecture where we have following components:
-  - Executor (API / Interface layer)
-    - **Crawler Executor**: This is the main component responsible for orchestrating the crawling process.
-    - **Background Service**: Manages concurrent crawling using parallel tasks.
-  - Domain (Core business logic - independent of any I/O operations.
-    - **UriExtractor**: Extracts all valid URLs from the HTML content. It uses Html Agility Parser to extract Uris.
-    - **UriValidator**: Validate the fetched Uris; check if it is having the same parent domain. 
-  - Infrastructure - Contains the I/O operations - HttpClient
-    - **WebDownloader**: Fetches the HTML content of each page.
-
-### Fault Tolerance
-
-- **Polly Library**: Configured with retries (3 times by default) using exponential backoff to handle transient errors.
-
-### Caching
-
-- **Distributed Caching**: Leverage Redis or similar services to cache upstream API responses.
-
-### Data structures
-- Thread safe data structures are used to store the background task details and to store the list of processed Uris facilitating the concurrent execution.
-
-![crawler_system_architecture](crawler_system_architecture.png)
 
 ## Productionize the Application
 ### Microservice Architecture
