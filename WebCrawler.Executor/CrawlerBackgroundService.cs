@@ -34,15 +34,15 @@ namespace WebCrawler.Executor
             _crawlOptions = crawlOptions.Value;
         }
 
-        protected override async Task ExecuteAsync(CancellationToken stoppingToken)
+        protected override async Task ExecuteAsync(CancellationToken cancellationToken)
         {
             try
             {
                 if (!GetConfigValues(out var initialCrawlUris, out var absoluteOutputFilePath)) return;
 
-                CreateTasksForInitialUris(stoppingToken, initialCrawlUris, absoluteOutputFilePath);
+                CreateTasksForInitialUris(cancellationToken, initialCrawlUris, absoluteOutputFilePath);
 
-                MonitorAndProcessCrawlTasks(stoppingToken);
+                MonitorAndProcessCrawlTasks(cancellationToken);
             }
             catch (Exception ex)
             {
@@ -58,7 +58,7 @@ namespace WebCrawler.Executor
             return initialCrawlUris != null && initialCrawlUris.Count != 0;
         }
         
-        private void CreateTasksForInitialUris(CancellationToken stoppingToken, List<string>? initialCrawlUris,
+        private void CreateTasksForInitialUris(CancellationToken cancellationToken, List<string>? initialCrawlUris,
             string absoluteOutputFilePath)
         {
             // Convert the valid links to a collection of tasks
@@ -71,25 +71,25 @@ namespace WebCrawler.Executor
                     continue;
                 }
 
-                _tasks.Add(new CrawlTask(uri, absoluteOutputFilePath), stoppingToken);
+                _tasks.Add(new CrawlTask(uri, absoluteOutputFilePath), cancellationToken);
             }
         }
 
-        private void MonitorAndProcessCrawlTasks(CancellationToken stoppingToken)
+        private void MonitorAndProcessCrawlTasks(CancellationToken cancellationToken)
         {
-            while (!stoppingToken.IsCancellationRequested)
+            while (!cancellationToken.IsCancellationRequested)
             {
-                if (!_tasks.TryTake(out var task, Timeout.Infinite, stoppingToken)) continue;
+                if (!_tasks.TryTake(out var task, Timeout.Infinite, cancellationToken)) continue;
                 
                 if (task.DepthLevel > _crawlOptions.MaxDepth)
                 {
-                    task.Status = CrawlTaskStatus.Failed;
+                    task.Status = CrawlTaskStatus.LimitReached;
                     continue;
                 }
 
                 if (task.Status == CrawlTaskStatus.Pending)
                 {
-                    _ = Task.Run(() => _uriProcessorService.ProcessUri(task, stoppingToken), stoppingToken);
+                    _ = Task.Run(() => _uriProcessorService.ProcessUri(task, cancellationToken), cancellationToken);
                 }
             }
         }

@@ -24,5 +24,6 @@ public enum CrawlTaskStatus
     Pending,
     Processing,
     Completed,
+    LimitReached,
     Failed
 }

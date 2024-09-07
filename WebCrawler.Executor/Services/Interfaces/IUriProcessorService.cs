@@ -4,5 +4,5 @@ namespace WebCrawler.Executor.Services.Interfaces;
 
 public interface IUriProcessorService
 {
-    Task ProcessUri(CrawlTask task, CancellationToken stoppingToken);
+    Task ProcessUri(CrawlTask task, CancellationToken cancellationToken);
 }

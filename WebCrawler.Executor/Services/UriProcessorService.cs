@@ -37,17 +37,21 @@ namespace WebCrawler.Executor.Services
             _crawlOptions = crawlSettings.Value;
         }
 
-        public async Task ProcessUri(CrawlTask task, CancellationToken stoppingToken)
+        public async Task ProcessUri(CrawlTask task, CancellationToken cancellationToken)
         {
             var stopwatch = Stopwatch.StartNew();
             try
             {
                 task.Status = CrawlTaskStatus.Processing;
                 
-                var (success, links) = await DownloadPageAndExtractUris(task, stoppingToken);
+                var (success, links) = await DownloadPageAndExtractUris(task, cancellationToken);
+
+                if (task.DepthLevel > 0)
+                    await Task.Delay(1000, cancellationToken); // Polite delay to avoid spamming the web server
+                
                 if (!success) return;
                
-                var scheduler = AddBackgroundTasksToCrawlLinksInBfsOrder(task, stoppingToken, links);
+                var scheduler = AddBackgroundTasksToCrawlLinksInBfsOrder(task, cancellationToken, links);
                 var crawlResultTask = BuildAndWriteResults(task, links, stopwatch);
                 await Task.WhenAll(scheduler, crawlResultTask);
                 
@@ -64,9 +68,9 @@ namespace WebCrawler.Executor.Services
             }
         }
         
-        private async Task<(bool success, List<Uri>? links)> DownloadPageAndExtractUris(CrawlTask task, CancellationToken stoppingToken)
+        private async Task<(bool success, List<Uri>? links)> DownloadPageAndExtractUris(CrawlTask task, CancellationToken cancellationToken)
         {
-            var htmlContent = await _webDownloader.DownloadPage(task.Uri, stoppingToken);
+            var htmlContent = await _webDownloader.DownloadPage(task.Uri, cancellationToken);
             if (htmlContent == null)
             {
                 task.Status = CrawlTaskStatus.Failed;
@@ -76,11 +80,11 @@ namespace WebCrawler.Executor.Services
             var links = _uriExtractor.ExtractValidUrls(htmlContent, task.Uri);
             return (true, links.ToList());
         }
-        private async Task AddBackgroundTasksToCrawlLinksInBfsOrder(CrawlTask parentTask, CancellationToken stoppingToken, List<Uri> links)
+        private async Task AddBackgroundTasksToCrawlLinksInBfsOrder(CrawlTask parentTask, CancellationToken cancellationToken, List<Uri> links)
         {
             _processedUris.TryAdd(parentTask.Uri, true);
 
-            await Parallel.ForEachAsync(links, stoppingToken, (link, token) =>
+            await Parallel.ForEachAsync(links, cancellationToken, (link, token) =>
             {
                 _logger.LogInformation(link.ToString());
                 if (_processedUris.TryAdd(link, true))

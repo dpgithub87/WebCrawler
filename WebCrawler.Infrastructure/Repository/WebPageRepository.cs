@@ -32,7 +32,7 @@ public class WebPageRepository : IWebPageRepository
             _logger.LogInformation($"Cache hit for {targetUri}");
             return cachedContent;
         }
-
+        
         var content = await _webPageDownloaderClient.DownloadPageAsync(targetUri);
         if (content != null)
         {
