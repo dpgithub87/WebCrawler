@@ -80,7 +80,7 @@ docker build -t webcrawler-executor:v1.0 .
 ```bash
 docker run --name web-crawler-container -it -e ASPNETCORE_ENVIRONMENT=Development webcrawler-executor:v1.0 --url "https://www.google.com" --maxdepth 1 --format "json"
 ```
-3. Retrieve the output from the Docker container to your local machine.
+3. Retrieve the output from the Docker container to your local machine. (please open a new terminal; just to keep the docker container running)
 ```bash
 docker cp web-crawler-container:/app/Output .
 ```
