@@ -26,11 +26,11 @@ public static class ServiceCollectionExtensions
         ConfigureWebContentDownloader(services);
         ConfigureWebContentHandlers(services);
         ConfigureCrawlResultsHandler(services);
-        
+
         services.AddHostedService<CrawlerBackgroundService>();
         services.Configure<CrawlOptions>(context.Configuration.GetSection("CrawlOptions"));
         services.Configure<InfrastructureOptions>(context.Configuration.GetSection("InfrastructureOptions"));
-        
+
         services.AddDistributedMemoryCache();
     }
     private static void ConfigureThreadSafeCollections(IServiceCollection services)
@@ -38,7 +38,7 @@ public static class ServiceCollectionExtensions
         services.AddSingleton<ConcurrentDictionary<Uri, bool>>();
         services.AddSingleton<BlockingCollection<CrawlTask>>();
     }
-    
+
     private static void ConfigureWebContentDownloader(IServiceCollection services)
     {
         services.AddHttpClient<IWebContentDownloaderClient, WebContentDownloaderClient>();
@@ -46,7 +46,7 @@ public static class ServiceCollectionExtensions
         services.AddScoped<IWebContentRepository, WebContentRepository>();
         services.AddScoped<IDistributedCacheWrapper, DistributedCacheWrapper>();
     }
-    
+
     private static void ConfigureWebContentHandlers(IServiceCollection services)
     {
         services.AddScoped<IUriValidator, UriValidator>();
@@ -56,12 +56,12 @@ public static class ServiceCollectionExtensions
         services.AddScoped<IWebContentHandler, HtmlContentHandler>();
         services.AddScoped<IUriProcessorService, UriProcessorService>();
     }
-    
+
     private static void ConfigureCrawlResultsHandler(IServiceCollection services)
     {
         services.AddScoped<ICrawlResultsHandler, JsonCrawlResultsHandler>();
         services.AddScoped<ICrawlResultsHandler, CsvCrawlResultsHandler>();
         services.AddScoped<ICrawlResultsHandlerFactory, CrawlResultsHandlerFactory>();
     }
-    
+
 }

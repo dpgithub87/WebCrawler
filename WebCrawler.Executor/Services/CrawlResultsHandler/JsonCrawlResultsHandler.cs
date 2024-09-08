@@ -6,15 +6,15 @@ namespace WebCrawler.Executor.Services.CrawlResultsHandler
 {
     public class JsonCrawlResultsHandler : ICrawlResultsHandler
     {
-       private static readonly SemaphoreSlim Semaphore = new SemaphoreSlim(1, 1);
-        
+        private static readonly SemaphoreSlim Semaphore = new SemaphoreSlim(1, 1);
+
         public async Task WriteResults(string outputFilePath, List<CrawlResult> newResults)
         {
             await Semaphore.WaitAsync();
             try
             {
                 List<CrawlResult> existingResults;
-                
+
                 // Ensure the directory exists
                 var directory = Path.GetDirectoryName(outputFilePath);
                 if (!string.IsNullOrEmpty(directory))
@@ -46,8 +46,8 @@ namespace WebCrawler.Executor.Services.CrawlResultsHandler
             {
                 Semaphore.Release();
             }
-                
-               
+
+
         }
     }
 }

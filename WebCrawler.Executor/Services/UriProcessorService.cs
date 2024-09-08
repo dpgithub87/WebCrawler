@@ -19,7 +19,7 @@ namespace WebCrawler.Executor.Services
         private readonly ICrawlResultsHandlerFactory _crawlResultsHandlerFactory;
         private readonly CrawlOptions _crawlOptions;
         private readonly IWebContentHandlerFactory _contentHandlerFactory;
-        
+
 
         public UriProcessorService(IWebContentDownloaderService webDownloader,
             ConcurrentDictionary<Uri, bool> processedUris,
@@ -44,18 +44,18 @@ namespace WebCrawler.Executor.Services
             try
             {
                 task.Status = CrawlTaskStatus.Processing;
-                
+
                 var (success, links) = await DownloadWebContentAndHandleBasedOnType(task, cancellationToken);
 
-               // await AddDelayForPoliteness(task, cancellationToken);
-                
+                // await AddDelayForPoliteness(task, cancellationToken);
+
                 if (!success) return;
-               
+
                 var scheduler = AddBackgroundTasksToCrawlLinksInBfsOrder(task, cancellationToken, links!);
                 var crawlResultTask = BuildAndWriteResults(task, links!, stopwatch);
                 await Task.WhenAll(scheduler, crawlResultTask);
-                
-               task.Status = CrawlTaskStatus.Completed;
+
+                task.Status = CrawlTaskStatus.Completed;
             }
             catch (Exception ex)
             {
@@ -76,18 +76,18 @@ namespace WebCrawler.Executor.Services
                 task.Status = CrawlTaskStatus.Failed;
                 return (false, null);
             }
-      
-            var contentType = webContent.ContentType; 
+
+            var contentType = webContent.ContentType;
             var handler = _contentHandlerFactory.CreateHandler(contentType!);
             return await handler.HandleContentAsync(webContent, task.Uri);
         }
-        
+
         private static async Task AddDelayForPoliteness(CrawlTask task, CancellationToken cancellationToken)
         {
             if (task.DepthLevel > 0)
                 await Task.Delay(1000, cancellationToken);
         }
-        
+
         private async Task AddBackgroundTasksToCrawlLinksInBfsOrder(CrawlTask parentTask, CancellationToken cancellationToken, List<Uri> links)
         {
             _processedUris.TryAdd(parentTask.Uri, true);
@@ -104,7 +104,7 @@ namespace WebCrawler.Executor.Services
                 return ValueTask.CompletedTask;
             });
         }
-        
+
         private async Task BuildAndWriteResults(CrawlTask task, List<Uri> links, Stopwatch stopwatch)
         {
             var crawlResult = new CrawlResult(task.Uri, task.ParentUri)

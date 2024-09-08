@@ -8,7 +8,7 @@ public class CrawlTask
     public int DepthLevel { get; set; }
 
     public string OutputFilePath { get; set; }
-    
+
     public CrawlTask(Uri uri, string outputFilePath, Uri? parentUri = null, int depthLevel = 0)
     {
         Uri = uri;

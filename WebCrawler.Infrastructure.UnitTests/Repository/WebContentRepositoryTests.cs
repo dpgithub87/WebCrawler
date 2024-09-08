@@ -72,7 +72,7 @@ public class WebContentRepositoryTests
         };
 
         var infrastructureSettings = Options.Create(infrastructureOptions);
-        
+
         cacheMock.Setup(x => x.GetWebContentAsync(cacheKey, cancellationToken))
                  .ReturnsAsync((WebContent?)null);
         webPageDownloaderClientMock.Setup(x => x.DownloadAsync(targetUri))

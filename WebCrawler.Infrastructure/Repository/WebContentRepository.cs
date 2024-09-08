@@ -23,13 +23,13 @@ public class WebContentRepository : IWebContentRepository
     {
         var cacheKey = $"WebPage_{targetUri.AbsoluteUri}";
         var cachedContent = await _cache.GetWebContentAsync(cacheKey, cancellationToken);
-        
+
         if (cachedContent != null)
         {
             _logger.LogInformation($"Cache hit for {targetUri}");
             return cachedContent;
         }
-        
+
         var content = await _webContentDownloaderClient.DownloadAsync(targetUri);
         if (content != null)
         {

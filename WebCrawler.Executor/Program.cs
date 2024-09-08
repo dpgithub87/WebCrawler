@@ -21,4 +21,3 @@ static IHostBuilder CreateHostBuilder(string[] args) =>
             logging.ClearProviders();
             logging.AddConsole();
         });
-        

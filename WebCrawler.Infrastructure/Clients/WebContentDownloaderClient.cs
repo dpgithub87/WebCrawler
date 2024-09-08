@@ -39,14 +39,14 @@ public class WebContentDownloaderClient : IWebContentDownloaderClient
             var response = await _retryPolicy.ExecuteAsync(() => _httpClient.GetAsync(targetUri));
 
             if (HandleFailureCases(targetUri, response)) return null;
-            
+
             var webContent = new WebContent()
             {
                 Content = await response.Content.ReadAsStringAsync(),
                 ContentType = response.Content.Headers.ContentType?.MediaType
             };
 
-            return webContent ;
+            return webContent;
         }
         catch (Exception ex)
         {

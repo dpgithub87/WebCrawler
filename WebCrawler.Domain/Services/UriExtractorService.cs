@@ -10,7 +10,7 @@ public class UriExtractorService : IUriExtractorService
     private readonly IHtmlParser _htmlParser;
     private readonly IUriValidator _uriValidator;
     private readonly ILogger<UriExtractorService> _logger;
-    
+
     public UriExtractorService(IHtmlParser htmlParser, IUriValidator uriValidator, ILogger<UriExtractorService> logger)
     {
         _htmlParser = htmlParser;
@@ -21,7 +21,7 @@ public class UriExtractorService : IUriExtractorService
     {
         var urls = new HashSet<Uri>();
         //The HashSet provides efficient O(1) time complexity for lookups and insertions.
-        
+
         var links = _htmlParser.GetLinks(pageContent);
         foreach (var link in links)
         {
@@ -32,8 +32,8 @@ public class UriExtractorService : IUriExtractorService
                     _logger.LogInformation($"Skipping duplicate link: {uri!.ToString()}");
             }
         }
-        
+
         return urls;
     }
-    
+
 }

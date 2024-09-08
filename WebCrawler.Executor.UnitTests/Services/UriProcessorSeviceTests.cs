@@ -38,16 +38,17 @@ public class UriProcessorServiceTests
         var cancellationToken = CancellationToken.None;
 
         var webDownloaderMock = _fixture.Freeze<Mock<IWebContentDownloaderService>>();
-        
+
         var loggerMock = _fixture.Freeze<Mock<ILogger<UriProcessorService>>>();
         var crawlSettings = SetupCrawlSettings();
 
         webDownloaderMock.Setup(x => x.DownloadContent(uri, cancellationToken))
-                         .ReturnsAsync(new WebContent(){
+                         .ReturnsAsync(new WebContent()
+                         {
                              Content = "<html></html>",
                              ContentType = "text/html"
-                             });
-        
+                         });
+
         var crawlResultsHandlerMock = new Mock<ICrawlResultsHandler>();
         _crawlResultsHandlerFactoryMock.Setup(x => x.GetHandler("csv"))
                                       .Returns(crawlResultsHandlerMock.Object);
@@ -55,11 +56,11 @@ public class UriProcessorServiceTests
         var webContentHandlerMock = _fixture.Freeze<Mock<IWebContentHandler>>();
         webContentHandlerMock.Setup(x => x.HandleContentAsync(It.IsAny<WebContent>(), uri))
                                     .ReturnsAsync((true, new List<Uri>()));
-        
+
         _webContentHandlerFactoryMock.Setup(x => x.CreateHandler("text/html"))
                                             .Returns(webContentHandlerMock.Object);
-        
-        
+
+
         var service = new UriProcessorService(
             webDownloaderMock.Object,
             new ConcurrentDictionary<Uri, bool>(),
@@ -110,9 +111,9 @@ public class UriProcessorServiceTests
             new BlockingCollection<CrawlTask>(),
             loggerMock.Object,
             _crawlResultsHandlerFactoryMock.Object,
-            _webContentHandlerFactoryMock.Object, 
+            _webContentHandlerFactoryMock.Object,
             crawlSettings);
-        
+
         // Act
         await service.ProcessUri(task, cancellationToken);
 
@@ -121,7 +122,7 @@ public class UriProcessorServiceTests
         webDownloaderMock.Verify(x => x.DownloadContent(uri, cancellationToken), Times.Once);
         uriExtractorMock.Verify(x => x.ExtractValidUrls(It.IsAny<string>(), uri), Times.Never);
     }
-    
+
     private static IOptions<CrawlOptions> SetupCrawlSettings()
     {
         var crawlOptions = new CrawlOptions

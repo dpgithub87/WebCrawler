@@ -16,21 +16,21 @@ public class WebContentDownloaderService : IWebContentDownloaderService
         _webContentRepository = webPageRepository;
         _logger = logger;
     }
-   public async Task<WebContent?> DownloadContent(Uri targetUri, CancellationToken cancellationToken)
-   {
-       try
-       {
-           if ((targetUri.Scheme.ToLower() != "http") && (targetUri.Scheme.ToLower() != "https"))
-           {
-               return null;
-           }
+    public async Task<WebContent?> DownloadContent(Uri targetUri, CancellationToken cancellationToken)
+    {
+        try
+        {
+            if ((targetUri.Scheme.ToLower() != "http") && (targetUri.Scheme.ToLower() != "https"))
+            {
+                return null;
+            }
 
-           return await _webContentRepository.GetWebPageAsync(targetUri, cancellationToken);
-       }
-       catch (Exception e)
-       {
-           _logger.LogError(e, "Error downloading page");
-           return null;
-       }
-   }
+            return await _webContentRepository.GetWebPageAsync(targetUri, cancellationToken);
+        }
+        catch (Exception e)
+        {
+            _logger.LogError(e, "Error downloading page");
+            return null;
+        }
+    }
 }

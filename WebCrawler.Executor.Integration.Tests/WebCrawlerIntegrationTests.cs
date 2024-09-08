@@ -13,7 +13,7 @@ public class WebCrawlerIntegrationTests
         const string urlToCrawl = "https://www.google.com";
         const string outputFormat = "json";
         const string maxDepth = "0";
-        
+
         // Set up the FileSystemWatcher to monitor the output directory
         var fileCreated = new TaskCompletionSource<string>();
         using var watcher = new FileSystemWatcher(outputDirectory);
@@ -37,10 +37,10 @@ public class WebCrawlerIntegrationTests
         };
 
         process.Start();
-        
+
         // Wait for the FileSystemWatcher to detect the new file
         var newFilePath = await fileCreated.Task;
-        
+
         // Send a cancellation signal to stop the application
         process.Kill();
 
@@ -50,9 +50,9 @@ public class WebCrawlerIntegrationTests
         // Verify the content of the output file
         var outputContent = await File.ReadAllTextAsync(newFilePath);
         Assert.Contains("https://www.google.com", outputContent);
-        
+
         // Clean up the output file
         File.Delete(newFilePath);
     }
-    
+
 }

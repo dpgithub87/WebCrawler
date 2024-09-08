@@ -8,7 +8,7 @@ namespace WebCrawler.Executor.Services.CrawlResultsHandler;
 
 public class CsvCrawlResultsHandler : ICrawlResultsHandler
 {
-    private static readonly SemaphoreSlim Semaphore = new (1, 1);
+    private static readonly SemaphoreSlim Semaphore = new(1, 1);
 
     public async Task WriteResults(string filePath, List<CrawlResult> crawlResults)
     {
@@ -21,7 +21,7 @@ public class CsvCrawlResultsHandler : ICrawlResultsHandler
             {
                 Directory.CreateDirectory(directory);
             }
-            
+
             var config = new CsvConfiguration(CultureInfo.InvariantCulture)
             {
                 HasHeaderRecord = !File.Exists(filePath)
@@ -30,7 +30,7 @@ public class CsvCrawlResultsHandler : ICrawlResultsHandler
             await using var stream = new FileStream(filePath, FileMode.Append, FileAccess.Write, FileShare.ReadWrite);
             await using var writer = new StreamWriter(stream);
             await using var csv = new CsvWriter(writer, config);
-            
+
             csv.Context.RegisterClassMap<CsvCrawlResultMap>();
             await csv.WriteRecordsAsync(crawlResults);
         }
@@ -38,6 +38,6 @@ public class CsvCrawlResultsHandler : ICrawlResultsHandler
         {
             Semaphore.Release();
         }
-      
+
     }
 }

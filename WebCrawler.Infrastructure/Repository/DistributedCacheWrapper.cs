@@ -27,7 +27,7 @@ public class DistributedCacheWrapper : IDistributedCacheWrapper
     public async Task SetWebContentAsync(string key, WebContent data, CancellationToken cancellationToken)
     {
         var dataBytes = JsonSerializer.SerializeToUtf8Bytes(data);
-      
+
         await _distributedCache.SetAsync(key, dataBytes, new DistributedCacheEntryOptions
         {
             AbsoluteExpirationRelativeToNow = TimeSpan.FromSeconds(_options.CacheExpirySeconds!.Value)

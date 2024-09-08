@@ -8,7 +8,7 @@ public class WebContentHandlerFactory : IWebContentHandlerFactory
     private readonly IServiceProvider _serviceProvider;
 
     private const string HtmlContentType = "text/html";
-    
+
     public WebContentHandlerFactory(IServiceProvider serviceProvider)
     {
         _serviceProvider = serviceProvider;

@@ -9,20 +9,20 @@ using WebCrawler.Infrastructure.Config;
 namespace WebCrawler.Infrastructure.UnitTests.Clients;
 public class WebContentDownloaderClientTests
 {
-private readonly Mock<HttpMessageHandler> _httpMessageHandlerMock;
-private readonly HttpClient _httpClient;
-private readonly Mock<ILogger<WebContentDownloaderClient>> _loggerMock;
-private WebContentDownloaderClient _client;
+    private readonly Mock<HttpMessageHandler> _httpMessageHandlerMock;
+    private readonly HttpClient _httpClient;
+    private readonly Mock<ILogger<WebContentDownloaderClient>> _loggerMock;
+    private WebContentDownloaderClient _client;
 
- public WebContentDownloaderClientTests()
+    public WebContentDownloaderClientTests()
     {
         _httpMessageHandlerMock = new Mock<HttpMessageHandler>();
         _httpClient = new HttpClient(_httpMessageHandlerMock.Object);
         _loggerMock = new Mock<ILogger<WebContentDownloaderClient>>();
-       
+
         var infrastructureOptionsValue = new InfrastructureOptions { PollyRetryCount = 3 };
         var infrastructureOptions = Options.Create(infrastructureOptionsValue);
-        
+
         _client = new WebContentDownloaderClient(_httpClient, _loggerMock.Object, infrastructureOptions);
     }
 
@@ -36,14 +36,14 @@ private WebContentDownloaderClient _client;
             Content = new StringContent("<html></html>")
         };
         responseMessage.Content.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue("text/html");
-        
+
         _httpMessageHandlerMock.Protected()
             .Setup<Task<HttpResponseMessage>>(
                 "SendAsync",
                 ItExpr.IsAny<HttpRequestMessage>(),
                 ItExpr.IsAny<CancellationToken>())
             .ReturnsAsync(responseMessage);
-        
+
         // Act
         var result = await _client.DownloadAsync(targetUri);
 
@@ -66,8 +66,8 @@ private WebContentDownloaderClient _client;
                 ItExpr.IsAny<CancellationToken>())
             .ReturnsAsync(responseMessage);
 
-        
-        
+
+
         // Act
         var result = await _client.DownloadAsync(targetUri);
 

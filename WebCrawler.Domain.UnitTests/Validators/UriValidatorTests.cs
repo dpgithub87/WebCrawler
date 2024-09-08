@@ -27,7 +27,7 @@ public class UriValidatorTests
     [InlineData("#bookmark")]
     public void IsValidUri_ShouldReturnFalse_ForInvalidOrBookmarkLinks(string link)
     {
-    
+
         var result = _uriValidator.IsValidUri(link, _parentUri, out var uri);
 
         Assert.False(result);
@@ -38,7 +38,7 @@ public class UriValidatorTests
     public void IsValidUri_ShouldReturnFalse_ForInvalidAbsoluteLink()
     {
         var link = "invalid://link";
-       
+
         var result = _uriValidator.IsValidUri(link, _parentUri, out var uri);
 
         Assert.False(result);
@@ -49,7 +49,7 @@ public class UriValidatorTests
     public void IsValidUri_ShouldReturnFalse_ForUnsupportedScheme()
     {
         var link = "ftp://example.com/resource";
-      
+
         var result = _uriValidator.IsValidUri(link, _parentUri, out var uri);
 
         Assert.False(result);
@@ -70,7 +70,7 @@ public class UriValidatorTests
     {
         var link = "/resource";
         var parentUri = new Uri("https://example.com/resource");
-        
+
         var result = _uriValidator.IsValidUri(link, parentUri, out var uri);
 
         Assert.False(result);
@@ -80,7 +80,7 @@ public class UriValidatorTests
     public void IsValidUri_ShouldReturnTrue_ForValidRelativeLink()
     {
         var link = "/resource";
-   
+
         var result = _uriValidator.IsValidUri(link, _parentUri, out var uri);
 
         Assert.True(result);
@@ -103,12 +103,12 @@ public class UriValidatorTests
     public void IsValidUri_ShouldReturnTrue_ForValidAbsoluteLinkWithDifferentPath()
     {
         var link = "https://example.com/different-path";
-        
+
         var result = _uriValidator.IsValidUri(link, _parentUri, out var uri);
 
         Assert.True(result);
         Assert.NotNull(uri);
         Assert.Equal(link, uri.ToString());
     }
-    
+
 }

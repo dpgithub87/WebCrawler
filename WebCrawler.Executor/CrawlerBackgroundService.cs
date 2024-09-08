@@ -15,7 +15,7 @@ namespace WebCrawler.Executor
         private readonly CrawlOptions _crawlOptions;
         private readonly ILogger<CrawlerBackgroundService> _logger;
         private readonly IUriProcessorService _uriProcessorService;
-        private readonly ConcurrentBag<Task> _runningTasks = new ();
+        private readonly ConcurrentBag<Task> _runningTasks = new();
 
         public CrawlerBackgroundService(IUriProcessorService uriProcessorService, BlockingCollection<CrawlTask> crawlTasks,
             IOptions<CrawlOptions> crawlOptions, ILogger<CrawlerBackgroundService> logger)
@@ -49,7 +49,7 @@ namespace WebCrawler.Executor
 
             return initialCrawlUris != null && initialCrawlUris.Count != 0;
         }
-        
+
         private void CreateTasksForInitialUris(CancellationToken cancellationToken, List<string>? initialCrawlUris,
             string absoluteOutputFilePath)
         {
@@ -71,7 +71,7 @@ namespace WebCrawler.Executor
             while (!cancellationToken.IsCancellationRequested)
             {
                 if (!_crawlTasks.TryTake(out var task, Timeout.Infinite, cancellationToken)) continue;
-                
+
                 if (task.DepthLevel > _crawlOptions.MaxDepth)
                 {
                     task.Status = CrawlTaskStatus.LimitReached;
@@ -79,11 +79,11 @@ namespace WebCrawler.Executor
                 }
 
                 if (task.Status != CrawlTaskStatus.Pending) continue;
-                
+
                 var processingTask = Task.Run(() => _uriProcessorService.ProcessUri(task, cancellationToken), cancellationToken);
                 _runningTasks.Add(processingTask);
             }
-            
+
             await Task.WhenAll(_runningTasks.ToArray());
         }
 

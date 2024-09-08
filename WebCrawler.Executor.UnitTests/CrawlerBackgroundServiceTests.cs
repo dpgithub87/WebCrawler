@@ -32,7 +32,7 @@ public class CrawlerBackgroundServiceTests
         var cancellationToken = cancellationTokenSource.Token;
         cancellationTokenSource.CancelAfter(TimeSpan.FromSeconds(2));
         // Simulating cancellation for the tests
-        
+
         var initialCrawlUris = new List<string> { "http://example.com" };
 
         var crawlOptionsValue = new CrawlOptions()
@@ -43,7 +43,7 @@ public class CrawlerBackgroundServiceTests
             OutputFormat = "csv"
         };
         var crawlOptions = Options.Create(crawlOptionsValue);
-        
+
         var tasks = new BlockingCollection<CrawlTask>();
 
         var service = new CrawlerBackgroundService(
@@ -54,7 +54,7 @@ public class CrawlerBackgroundServiceTests
 
         // Act
         await service.StartAsync(cancellationToken);
-        
+
         // Assert
         Assert.True(cancellationToken.IsCancellationRequested);
         Assert.Empty(tasks); // confirms the tasks were processed
