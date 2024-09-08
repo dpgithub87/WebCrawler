@@ -61,8 +61,9 @@ git clone https://github.com/dpgithub87/WebCrawler.git
 ```
 ### 2. Run the Project Locally
 
-To run the crawler, navigate to the root directory and execute the appropriate command in your terminal.
+To run the crawler, navigate to the root directory (`WebCrawler/`) and execute the appropriate command in your terminal.
 ```bash
+cd WebCrawler
 dotnet run --project WebCrawler.Executor/WebCrawler.Executor.csproj --url "https://www.google.com" --maxdepth 1 --format "json"
 ```
 **Output**: The results will be saved in the `Output` folder located in `WebCrawler/WebCrawler.Executor/Output`.
