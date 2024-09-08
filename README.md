@@ -61,8 +61,9 @@ git clone https://github.com/dpgithub87/WebCrawler.git
 ```
 ### 2. Run the Project Locally
 
-To run the crawler, navigate to the root directory and execute the appropriate command in your terminal.
+To run the crawler, navigate to the root directory (`WebCrawler/`) and execute the appropriate command in your terminal.
 ```bash
+cd WebCrawler
 dotnet run --project WebCrawler.Executor/WebCrawler.Executor.csproj --url "https://www.google.com" --maxdepth 1 --format "json"
 ```
 **Output**: The results will be saved in the `Output` folder located in `WebCrawler/WebCrawler.Executor/Output`.
@@ -79,7 +80,7 @@ docker build -t webcrawler-executor:v1.0 .
 ```bash
 docker run --name web-crawler-container -it -e ASPNETCORE_ENVIRONMENT=Development webcrawler-executor:v1.0 --url "https://www.google.com" --maxdepth 1 --format "json"
 ```
-3. Retrieve the output from the Docker container to your local machine.
+3. Retrieve the output from the Docker container to your local machine. (please open a new terminal; just to keep the docker container running)
 ```bash
 docker cp web-crawler-container:/app/Output .
 ```
