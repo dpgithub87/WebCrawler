@@ -5,7 +5,6 @@ using Microsoft.Extensions.Options;
 using WebCrawler.Domain.Services.Interfaces;
 using WebCrawler.Executor.Config;
 using WebCrawler.Executor.Models;
-using WebCrawler.Executor.Services.CrawlResultsHandler;
 using WebCrawler.Executor.Services.Interfaces;
 
 namespace WebCrawler.Executor.Services
@@ -86,6 +85,11 @@ namespace WebCrawler.Executor.Services
 
             await Parallel.ForEachAsync(links, cancellationToken, (link, token) =>
             {
+                if (parentTask.Uri.Host != link.Host)
+                {
+                    _logger.LogInformation($"Skipping link with different host: {link.Host}");
+                    return ValueTask.CompletedTask;
+                }
                 _logger.LogInformation(link.ToString());
                 if (_processedUris.TryAdd(link, true))
                 {
