@@ -47,7 +47,7 @@ namespace WebCrawler.Executor.Services
                 
                 var (success, links) = await DownloadContentAndCrawl(task, cancellationToken);
 
-                await AddDelayForPoliteness(task, cancellationToken);
+               // await AddDelayForPoliteness(task, cancellationToken);
                 
                 if (!success) return;
                

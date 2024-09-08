@@ -90,6 +90,14 @@ docker cp web-crawler-container:/app/Output .
 
 **Note**: The first run may take some time as Docker downloads the base ASP.NET 8.0 and SDK images. Subsequent runs will be faster due to caching.
 
+## Testing
+The test projects include unit tests and integration tests. Integration tests will query the "https://www.google.com" website for data.
+The unit tests run with mocked data.
+Execute the below "test" command by navigating to root folder `WebCrawler/` in CLI.
+```sh
+dotnet test
+```
+
 ## Productionize the Application
 ### Microservice Architecture
 
@@ -111,7 +119,7 @@ docker cp web-crawler-container:/app/Output .
 
 ### CI/CD Pipeline
 
-Use the `WebCrawler.Executor/Dockerfile` to build Docker images in your CI/CD pipeline. These images can then be pushed to cloud container registries and deployed to Kubernetes clusters (e.g., Azure Kubernetes Service - AKS).
+Use the `WebCrawler/Dockerfile` to build Docker images in your CI/CD pipeline. These images can then be pushed to cloud container registries and deployed to Kubernetes clusters (e.g., Azure Kubernetes Service - AKS).
 
 ### Deployment & Monitoring
 
@@ -143,11 +151,13 @@ The application can be deployed on any Kubernetes cluster (AKS, EKS, etc.).
 - Distributed Crawling: Have the crawler deployed in different geographical locations which will help in reducing the latency.
 
 ### Maintainability
+
 - Implement a centralized logging system to monitor the application's health and performance.
 - Create domain specific objects to decouple the business logic from the infrastructure. 
   - Separate mappers for converting the domain objects to Infra objects.
 
 ### Fault tolerance
+
 - Implement Circuit breaker pattern to handle any system failures gracefully.
 - Ensure no singlge point of failure in the system by replicating the components where needed.
 
