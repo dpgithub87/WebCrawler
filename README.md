@@ -89,7 +89,7 @@ docker cp web-crawler-container:/app/Output .
 - **Page Depth Limit**: maxdepth - You can impose a limit on the level of depth to crawl in BFS(breadh first search) manner.
 - **Output Format**: format - Format of the output export file, currently supports JSON/CSV.
 
-**Note**: The first run may take some time as Docker downloads the base ASP.NET 8.0 and SDK images. Subsequent runs will be faster due to caching.
+**Note**: The first run may take additional time as Docker downloads the base ASP.NET 8.0 and SDK images. Subsequent runs will be faster due to caching.
 
 ## Testing
 The test projects include unit tests and integration tests. Integration tests will query the "https://www.google.com" website for data.
