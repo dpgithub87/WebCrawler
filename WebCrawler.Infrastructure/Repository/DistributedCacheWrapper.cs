@@ -18,13 +18,13 @@ public class DistributedCacheWrapper : IDistributedCacheWrapper
         _options = options.Value;
     }
 
-    public async Task<WebContent?> GetDownloadedContentAsync(string key, CancellationToken cancellationToken)
+    public async Task<WebContent?> GetWebContentAsync(string key, CancellationToken cancellationToken)
     {
         var cachedBytes = await _distributedCache.GetAsync(key, cancellationToken);
         return cachedBytes == null ? null : JsonSerializer.Deserialize<WebContent>(cachedBytes);
     }
 
-    public async Task SetDownloadedContentAsync(string key, WebContent data, CancellationToken cancellationToken)
+    public async Task SetWebContentAsync(string key, WebContent data, CancellationToken cancellationToken)
     {
         var dataBytes = JsonSerializer.SerializeToUtf8Bytes(data);
       

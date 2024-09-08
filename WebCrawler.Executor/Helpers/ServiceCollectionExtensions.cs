@@ -23,8 +23,8 @@ public static class ServiceCollectionExtensions
     public static void ConfigureCrawlerServices(this IServiceCollection services, HostBuilderContext context)
     {
         ConfigureThreadSafeCollections(services);
-        ConfigureWebPageDownloader(services);
-        ConfigureDownloadedContentHandlers(services);
+        ConfigureWebContentDownloader(services);
+        ConfigureWebContentHandlers(services);
         ConfigureCrawlResultsHandler(services);
         
         services.AddHostedService<CrawlerBackgroundService>();
@@ -39,7 +39,7 @@ public static class ServiceCollectionExtensions
         services.AddSingleton<BlockingCollection<CrawlTask>>();
     }
     
-    private static void ConfigureWebPageDownloader(IServiceCollection services)
+    private static void ConfigureWebContentDownloader(IServiceCollection services)
     {
         services.AddHttpClient<IWebContentDownloaderClient, WebContentDownloaderClient>();
         services.AddScoped<IWebContentDownloaderService, WebContentDownloaderService>();
@@ -47,7 +47,7 @@ public static class ServiceCollectionExtensions
         services.AddScoped<IDistributedCacheWrapper, DistributedCacheWrapper>();
     }
     
-    private static void ConfigureDownloadedContentHandlers(IServiceCollection services)
+    private static void ConfigureWebContentHandlers(IServiceCollection services)
     {
         services.AddScoped<IUriValidator, UriValidator>();
         services.AddScoped<IUriExtractorService, UriExtractorService>();

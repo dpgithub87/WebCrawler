@@ -17,7 +17,7 @@ public class UriProcessorServiceTests
 {
     private readonly IFixture _fixture;
     private readonly Mock<ICrawlResultsHandlerFactory> _crawlResultsHandlerFactoryMock = new();
-    private readonly Mock<IWebContentHandlerFactory> _downloadedContentHandlerFactoryMock = new();
+    private readonly Mock<IWebContentHandlerFactory> _webContentHandlerFactoryMock = new();
     public UriProcessorServiceTests()
     {
         _fixture = new Fixture().Customize(new AutoMoqCustomization());
@@ -52,12 +52,12 @@ public class UriProcessorServiceTests
         _crawlResultsHandlerFactoryMock.Setup(x => x.GetHandler("csv"))
                                       .Returns(crawlResultsHandlerMock.Object);
 
-        var downloadedContentHandlerMock = _fixture.Freeze<Mock<IWebContentHandler>>();
-        downloadedContentHandlerMock.Setup(x => x.HandleContentAsync(It.IsAny<WebContent>(), uri))
+        var webContentHandlerMock = _fixture.Freeze<Mock<IWebContentHandler>>();
+        webContentHandlerMock.Setup(x => x.HandleContentAsync(It.IsAny<WebContent>(), uri))
                                     .ReturnsAsync((true, new List<Uri>()));
         
-        _downloadedContentHandlerFactoryMock.Setup(x => x.CreateHandler("text/html"))
-                                            .Returns(downloadedContentHandlerMock.Object);
+        _webContentHandlerFactoryMock.Setup(x => x.CreateHandler("text/html"))
+                                            .Returns(webContentHandlerMock.Object);
         
         
         var service = new UriProcessorService(
@@ -66,7 +66,7 @@ public class UriProcessorServiceTests
             new BlockingCollection<CrawlTask>(),
             loggerMock.Object,
             _crawlResultsHandlerFactoryMock.Object,
-            _downloadedContentHandlerFactoryMock.Object,
+            _webContentHandlerFactoryMock.Object,
             crawlSettings);
 
         // Act
@@ -75,7 +75,7 @@ public class UriProcessorServiceTests
         // Assert
         Assert.Equal(CrawlTaskStatus.Completed, task.Status);
         webDownloaderMock.Verify(x => x.DownloadContent(uri, cancellationToken), Times.Once);
-        downloadedContentHandlerMock.Verify(x => x.HandleContentAsync(It.IsAny<WebContent>(), uri), Times.Once);
+        webContentHandlerMock.Verify(x => x.HandleContentAsync(It.IsAny<WebContent>(), uri), Times.Once);
         crawlResultsHandlerMock.Verify(x => x.WriteResults("output.csv", It.IsAny<List<CrawlResult>>()), Times.Once);
     }
 
@@ -100,9 +100,9 @@ public class UriProcessorServiceTests
 
         webDownloaderMock.Setup(x => x.DownloadContent(uri, cancellationToken))
                          .ReturnsAsync((WebContent?)null);
-        var downloadedContentHandlerMock = new Mock<IWebContentHandler>();
-        _downloadedContentHandlerFactoryMock.Setup(x => x.CreateHandler("text/html"))
-            .Returns(downloadedContentHandlerMock.Object);
+        var webContentHandlerMock = new Mock<IWebContentHandler>();
+        _webContentHandlerFactoryMock.Setup(x => x.CreateHandler("text/html"))
+            .Returns(webContentHandlerMock.Object);
 
         var service = new UriProcessorService(
             webDownloaderMock.Object,
@@ -110,7 +110,7 @@ public class UriProcessorServiceTests
             new BlockingCollection<CrawlTask>(),
             loggerMock.Object,
             _crawlResultsHandlerFactoryMock.Object,
-            _downloadedContentHandlerFactoryMock.Object, 
+            _webContentHandlerFactoryMock.Object, 
             crawlSettings);
         
         // Act

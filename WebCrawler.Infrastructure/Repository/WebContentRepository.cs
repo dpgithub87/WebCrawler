@@ -22,7 +22,7 @@ public class WebContentRepository : IWebContentRepository
     public async Task<WebContent?> GetWebPageAsync(Uri targetUri, CancellationToken cancellationToken)
     {
         var cacheKey = $"WebPage_{targetUri.AbsoluteUri}";
-        var cachedContent = await _cache.GetDownloadedContentAsync(cacheKey, cancellationToken);
+        var cachedContent = await _cache.GetWebContentAsync(cacheKey, cancellationToken);
         
         if (cachedContent != null)
         {
@@ -33,7 +33,7 @@ public class WebContentRepository : IWebContentRepository
         var content = await _webContentDownloaderClient.DownloadAsync(targetUri);
         if (content != null)
         {
-            await _cache.SetDownloadedContentAsync(cacheKey, content, cancellationToken);
+            await _cache.SetWebContentAsync(cacheKey, content, cancellationToken);
         }
 
         return content;

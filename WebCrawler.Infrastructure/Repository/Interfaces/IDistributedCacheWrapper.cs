@@ -5,6 +5,6 @@ namespace WebCrawler.Infrastructure.Repository.Interfaces;
 
 public interface IDistributedCacheWrapper
 {
-    Task<WebContent?> GetDownloadedContentAsync(string key, CancellationToken cancellationToken);
-    Task SetDownloadedContentAsync(string key, WebContent data, CancellationToken cancellationToken);
+    Task<WebContent?> GetWebContentAsync(string key, CancellationToken cancellationToken);
+    Task SetWebContentAsync(string key, WebContent data, CancellationToken cancellationToken);
 }

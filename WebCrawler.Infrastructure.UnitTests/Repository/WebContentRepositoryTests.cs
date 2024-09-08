@@ -38,7 +38,7 @@ public class WebContentRepositoryTests
             ContentType = "text/html"
         };
 
-        cacheMock.Setup(x => x.GetDownloadedContentAsync(cacheKey, cancellationToken))
+        cacheMock.Setup(x => x.GetWebContentAsync(cacheKey, cancellationToken))
                  .ReturnsAsync(cachedContent);
 
         // Act
@@ -46,12 +46,12 @@ public class WebContentRepositoryTests
 
         // Assert
         Assert.Equal(cachedContent, result);
-        cacheMock.Verify(x => x.GetDownloadedContentAsync(cacheKey, cancellationToken), Times.Once);
+        cacheMock.Verify(x => x.GetWebContentAsync(cacheKey, cancellationToken), Times.Once);
         webPageDownloaderClientMock.Verify(x => x.DownloadAsync(It.IsAny<Uri>()), Times.Never);
     }
 
     [Theory, AutoMoqData]
-    public async Task GetWebPageAsync_ShouldReturnDownloadedContent_WhenCacheMiss(
+    public async Task GetWebPageAsync_ShouldReturnWebContent_WhenCacheMiss(
         [Frozen] Mock<IWebContentDownloaderClient> webPageDownloaderClientMock,
         [Frozen] Mock<IDistributedCacheWrapper> cacheMock,
         [Frozen] Mock<ILogger<WebContentRepository>> loggerMock
@@ -61,7 +61,7 @@ public class WebContentRepositoryTests
         var targetUri = new Uri("http://example.com");
         var cancellationToken = CancellationToken.None;
         var cacheKey = $"WebPage_{targetUri.AbsoluteUri}";
-        var downloadedContent = new WebContent()
+        var webContent = new WebContent()
         {
             Content = "<html>Downloaded Content</html>",
             ContentType = "text/html"
@@ -73,20 +73,20 @@ public class WebContentRepositoryTests
 
         var infrastructureSettings = Options.Create(infrastructureOptions);
         
-        cacheMock.Setup(x => x.GetDownloadedContentAsync(cacheKey, cancellationToken))
+        cacheMock.Setup(x => x.GetWebContentAsync(cacheKey, cancellationToken))
                  .ReturnsAsync((WebContent?)null);
         webPageDownloaderClientMock.Setup(x => x.DownloadAsync(targetUri))
-                                   .ReturnsAsync(downloadedContent);
+                                   .ReturnsAsync(webContent);
 
         // Act
         var repository = new WebContentRepository(webPageDownloaderClientMock.Object, cacheMock.Object, loggerMock.Object);
         var result = await repository.GetWebPageAsync(targetUri, cancellationToken);
 
         // Assert
-        Assert.Equal(downloadedContent, result);
-        cacheMock.Verify(x => x.GetDownloadedContentAsync(cacheKey, cancellationToken), Times.Once);
+        Assert.Equal(webContent, result);
+        cacheMock.Verify(x => x.GetWebContentAsync(cacheKey, cancellationToken), Times.Once);
         webPageDownloaderClientMock.Verify(x => x.DownloadAsync(targetUri), Times.Once);
-        cacheMock.Verify(x => x.SetDownloadedContentAsync(cacheKey, downloadedContent, cancellationToken), Times.Once);
+        cacheMock.Verify(x => x.SetWebContentAsync(cacheKey, webContent, cancellationToken), Times.Once);
     }
 
     [Theory, AutoMoqData]
@@ -100,7 +100,7 @@ public class WebContentRepositoryTests
         var cancellationToken = CancellationToken.None;
         var cacheKey = $"WebPage_{targetUri.AbsoluteUri}";
 
-        cacheMock.Setup(x => x.GetDownloadedContentAsync(cacheKey, cancellationToken))
+        cacheMock.Setup(x => x.GetWebContentAsync(cacheKey, cancellationToken))
                  .ReturnsAsync((WebContent?)null);
         webPageDownloaderClientMock.Setup(x => x.DownloadAsync(targetUri))
                                    .ReturnsAsync((WebContent?)null);
@@ -110,8 +110,8 @@ public class WebContentRepositoryTests
 
         // Assert
         Assert.Null(result);
-        cacheMock.Verify(x => x.GetDownloadedContentAsync(cacheKey, cancellationToken), Times.Once);
+        cacheMock.Verify(x => x.GetWebContentAsync(cacheKey, cancellationToken), Times.Once);
         webPageDownloaderClientMock.Verify(x => x.DownloadAsync(targetUri), Times.Once);
-        cacheMock.Verify(x => x.SetDownloadedContentAsync(It.IsAny<string>(), It.IsAny<WebContent>(), cancellationToken), Times.Never);
+        cacheMock.Verify(x => x.SetWebContentAsync(It.IsAny<string>(), It.IsAny<WebContent>(), cancellationToken), Times.Never);
     }
 }

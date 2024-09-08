@@ -40,13 +40,13 @@ public class WebContentDownloaderClient : IWebContentDownloaderClient
 
             if (HandleFailureCases(targetUri, response)) return null;
             
-            var downloadedContent = new WebContent()
+            var webContent = new WebContent()
             {
                 Content = await response.Content.ReadAsStringAsync(),
                 ContentType = response.Content.Headers.ContentType?.MediaType
             };
 
-            return downloadedContent ;
+            return webContent ;
         }
         catch (Exception ex)
         {
