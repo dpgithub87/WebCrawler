@@ -47,8 +47,6 @@ namespace WebCrawler.Executor.Services
 
                 var (success, links) = await DownloadWebContentAndHandleBasedOnType(task, cancellationToken);
 
-                // await AddDelayForPoliteness(task, cancellationToken);
-
                 if (!success) return;
 
                 var scheduler = AddBackgroundTasksToCrawlLinksInBfsOrder(task, cancellationToken, links!);
@@ -80,12 +78,6 @@ namespace WebCrawler.Executor.Services
             var contentType = webContent.ContentType;
             var handler = _contentHandlerFactory.CreateHandler(contentType!);
             return await handler.HandleContentAsync(webContent, task.Uri);
-        }
-
-        private static async Task AddDelayForPoliteness(CrawlTask task, CancellationToken cancellationToken)
-        {
-            if (task.DepthLevel > 0)
-                await Task.Delay(1000, cancellationToken);
         }
 
         private async Task AddBackgroundTasksToCrawlLinksInBfsOrder(CrawlTask parentTask, CancellationToken cancellationToken, List<Uri> links)

@@ -61,7 +61,7 @@ git clone https://github.com/dpgithub87/WebCrawler.git
 ```
 ### 2. Run the Project Locally
 
-To run the crawler, navigate to the root directory (`WebCrawler/`) and execute the appropriate command in your terminal.
+To run the crawler, navigate to the root directory (`WebCrawler/`) and execute the below command in your terminal.
 ```bash
 cd WebCrawler
 dotnet run --project WebCrawler.Executor/WebCrawler.Executor.csproj --url "https://www.google.com" --maxdepth 1 --format "json"
@@ -80,7 +80,7 @@ docker build -t webcrawler-executor:v1.0 .
 ```bash
 docker run --name web-crawler-container -it -e ASPNETCORE_ENVIRONMENT=Development webcrawler-executor:v1.0 --url "https://www.google.com" --maxdepth 1 --format "json"
 ```
-3. Retrieve the output from the Docker container to your local machine. (please open a new terminal; just to keep the docker container running)
+3. The Crawler app will automatically shut down if no new URIs are available to crawl within a 10-second window. After that, you can retrieve the output from the Docker container to your local machine.
 ```bash
 docker cp web-crawler-container:/app/Output .
 ```
@@ -97,6 +97,19 @@ The unit tests run with mocked data.
 Execute the below "test" command by navigating to root folder `WebCrawler/` in CLI.
 ```sh
 dotnet test
+```
+The test results will be displayed in the CLI.
+```
+Starting test execution, please wait...
+A total of 1 test files matched the specified pattern.
+
+Passed!  - Failed:     0, Passed:    17, Skipped:     0, Total:    17, Duration: 215 ms - WebCrawler.Domain.UnitTests.dll (net8.0)
+
+Passed!  - Failed:     0, Passed:     3, Skipped:     0, Total:     3, Duration: 4 s - WebCrawler.Executor.UnitTests.dll (net8.0)
+
+Passed!  - Failed:     0, Passed:     1, Skipped:     0, Total:     1, Duration: < 1 ms - WebCrawler.Executor.Integration.Tests.dll (net8.0)
+
+Passed!  - Failed:     0, Passed:     6, Skipped:     0, Total:     6, Duration: 14 s - WebCrawler.Infrastructure.UnitTests.dll (net8.0)
 ```
 
 ## Productionize the Application
@@ -160,7 +173,7 @@ The application can be deployed on any Kubernetes cluster (AKS, EKS, etc.).
 ### Fault tolerance
 
 - Implement Circuit breaker pattern to handle any system failures gracefully.
-- Ensure no singlge point of failure in the system by replicating the components where needed.
+- Ensure no single point of failure in the system by replicating the components where needed.
 
 ### Extensibility
 

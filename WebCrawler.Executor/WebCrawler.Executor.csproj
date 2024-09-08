@@ -27,7 +27,6 @@
     <None Update="appsettings.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Remove="Output\crawl_20240907133102_598cba47-b965-4937-83b5-03f29d1b6390.json" />
 
   </ItemGroup>
 
