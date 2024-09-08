@@ -1,4 +1,5 @@
 using System.Text.Json;
+using Microsoft.Extensions.Logging;
 using WebCrawler.Executor.Models;
 using WebCrawler.Executor.Services.Interfaces;
 
@@ -7,7 +8,11 @@ namespace WebCrawler.Executor.Services.CrawlResultsHandler
     public class JsonCrawlResultsHandler : ICrawlResultsHandler
     {
         private static readonly SemaphoreSlim Semaphore = new SemaphoreSlim(1, 1);
-
+        private readonly ILogger<JsonCrawlResultsHandler> _logger;
+        public JsonCrawlResultsHandler(ILogger<JsonCrawlResultsHandler> logger)
+        {
+            _logger = logger;
+        }
         public async Task WriteResults(string outputFilePath, List<CrawlResult> newResults)
         {
             await Semaphore.WaitAsync();
@@ -41,13 +46,12 @@ namespace WebCrawler.Executor.Services.CrawlResultsHandler
 
                 var json = JsonSerializer.Serialize(existingResults, options);
                 await File.WriteAllTextAsync(outputFilePath, json);
+                _logger.LogInformation("Results written to {OutputFilePath}", outputFilePath);
             }
             finally
             {
                 Semaphore.Release();
             }
-
-
         }
     }
 }
