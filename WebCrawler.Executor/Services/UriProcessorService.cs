@@ -18,7 +18,7 @@ namespace WebCrawler.Executor.Services
         private readonly ILogger<UriProcessorService> _logger;
         private readonly ICrawlResultsHandlerFactory _crawlResultsHandlerFactory;
         private readonly CrawlOptions _crawlOptions;
-        private readonly IDownloadedContentHandlerFactory _contentHandlerFactory;
+        private readonly IWebContentHandlerFactory _contentHandlerFactory;
         
 
         public UriProcessorService(IWebContentDownloaderService webDownloader,
@@ -26,7 +26,7 @@ namespace WebCrawler.Executor.Services
             BlockingCollection<CrawlTask> tasks,
             ILogger<UriProcessorService> logger,
             ICrawlResultsHandlerFactory crawlResultsHandlerFactory,
-            IDownloadedContentHandlerFactory contentHandlerFactory,
+            IWebContentHandlerFactory contentHandlerFactory,
             IOptions<CrawlOptions> crawlSettings)
         {
             _webDownloader = webDownloader;
@@ -45,14 +45,14 @@ namespace WebCrawler.Executor.Services
             {
                 task.Status = CrawlTaskStatus.Processing;
                 
-                var (success, links) = await DownloadContentAndCrawl(task, cancellationToken);
+                var (success, links) = await DownloadWebContentAndHandleBasedOnType(task, cancellationToken);
 
                // await AddDelayForPoliteness(task, cancellationToken);
                 
                 if (!success) return;
                
-                var scheduler = AddBackgroundTasksToCrawlLinksInBfsOrder(task, cancellationToken, links);
-                var crawlResultTask = BuildAndWriteResults(task, links, stopwatch);
+                var scheduler = AddBackgroundTasksToCrawlLinksInBfsOrder(task, cancellationToken, links!);
+                var crawlResultTask = BuildAndWriteResults(task, links!, stopwatch);
                 await Task.WhenAll(scheduler, crawlResultTask);
                 
                task.Status = CrawlTaskStatus.Completed;
@@ -68,7 +68,7 @@ namespace WebCrawler.Executor.Services
             }
         }
 
-        private async Task<(bool success, List<Uri>? links)> DownloadContentAndCrawl(CrawlTask task, CancellationToken cancellationToken)
+        private async Task<(bool success, List<Uri>? links)> DownloadWebContentAndHandleBasedOnType(CrawlTask task, CancellationToken cancellationToken)
         {
             var webContent = await _webDownloader.DownloadContent(task.Uri, cancellationToken);
             if (webContent == null)
@@ -109,7 +109,7 @@ namespace WebCrawler.Executor.Services
         {
             var crawlResult = new CrawlResult(task.Uri, task.ParentUri)
             {
-                Links = links.ToList(),
+                Links = links,
                 CrawlTime = stopwatch.Elapsed,
                 DepthLevel = task.DepthLevel
             };

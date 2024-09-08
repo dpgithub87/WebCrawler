@@ -22,12 +22,12 @@ public static class StartupConfiguration
             });
 
         // Update the configuration with the merged settings
-        var inMemorySettings = new Dictionary<string, string>
+        var inMemorySettings = new List<KeyValuePair<string, string?>>
         {
-            { "CrawlOptions:InitialCrawlUris", settings.InitialCrawlUris },
-            { "CrawlOptions:OutputFilePath", settings.OutputFilePath },
-            { "CrawlOptions:MaxDepth", settings.MaxDepth.ToString() },
-            { "CrawlOptions:OutputFormat", settings.OutputFormat }
+            new ("CrawlOptions:InitialCrawlUris", settings!.InitialCrawlUris),
+            new ("CrawlOptions:OutputFilePath", settings.OutputFilePath),
+            new ("CrawlOptions:MaxDepth", settings.MaxDepth.ToString()),
+            new ("CrawlOptions:OutputFormat", settings.OutputFormat)
         };
 
         config.AddInMemoryCollection(inMemorySettings);

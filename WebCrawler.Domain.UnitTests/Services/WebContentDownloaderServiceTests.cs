@@ -22,7 +22,6 @@ public class WebContentDownloaderServiceTests
     [Theory, AutoMoqData]
     public async Task DownloadPage_ShouldReturnContent_WhenUriIsValid(
         [Frozen] Mock<IWebContentRepository> webPageRepositoryMock,
-        [Frozen] Mock<ILogger<WebContentDownloaderService>> loggerMock,
         WebContentDownloaderService service)
     {
         // Arrange
@@ -48,7 +47,6 @@ public class WebContentDownloaderServiceTests
     [Theory, AutoMoqData]
     public async Task DownloadPage_ShouldReturnNull_WhenUriIsInvalidScheme(
         [Frozen] Mock<IWebContentRepository> webPageRepositoryMock,
-        [Frozen] Mock<ILogger<WebContentDownloaderService>> loggerMock,
         WebContentDownloaderService service)
     {
         // Arrange
@@ -66,7 +64,6 @@ public class WebContentDownloaderServiceTests
     [Theory, AutoMoqData]
     public async Task DownloadPage_ShouldLogError_WhenExceptionIsThrown(
         [Frozen] Mock<IWebContentRepository> webPageRepositoryMock,
-        [Frozen] Mock<ILogger<WebContentDownloaderService>> loggerMock,
         WebContentDownloaderService service)
     {
         // Arrange

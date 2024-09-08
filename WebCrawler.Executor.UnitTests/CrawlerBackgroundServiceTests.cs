@@ -2,8 +2,6 @@ using System.Collections.Concurrent;
 using AutoFixture;
 using AutoFixture.AutoMoq;
 using AutoFixture.Xunit2;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Moq;
@@ -25,12 +23,9 @@ public class CrawlerBackgroundServiceTests
 
     [Theory, AutoMoqData]
     public async Task ExecuteAsync_ShouldProcessInitialCrawlUris(
-        [Frozen] Mock<IServiceProvider> serviceProviderMock,
-        [Frozen] Mock<IConfiguration> configurationMock,
         [Frozen] Mock<ILogger<CrawlerBackgroundService>> loggerMock,
-        [Frozen] Mock<IUriProcessorService> uriProcessorServiceMock,
-        [Frozen] Mock<IHostApplicationLifetime> applicationLifetimeMock,
-        CrawlerBackgroundService service)
+        [Frozen] Mock<IUriProcessorService> uriProcessorServiceMock
+        )
     {
         // Arrange
         var cancellationTokenSource = new CancellationTokenSource();
@@ -39,7 +34,6 @@ public class CrawlerBackgroundServiceTests
         // Simulating cancellation for the tests
         
         var initialCrawlUris = new List<string> { "http://example.com" };
-        var absoluteOutputFilePath = "output/path";
 
         var crawlOptionsValue = new CrawlOptions()
         {
@@ -51,20 +45,15 @@ public class CrawlerBackgroundServiceTests
         var crawlOptions = Options.Create(crawlOptionsValue);
         
         var tasks = new BlockingCollection<CrawlTask>();
-        var processedUris = new ConcurrentDictionary<Uri, bool>();
 
-        var serviceWithMocks = new CrawlerBackgroundService(
-            serviceProviderMock.Object,
-            configurationMock.Object,
-            loggerMock.Object,
+        var service = new CrawlerBackgroundService(
             uriProcessorServiceMock.Object,
             tasks,
-            processedUris,
             crawlOptions,
-            applicationLifetimeMock.Object);
+            loggerMock.Object);
 
         // Act
-        await serviceWithMocks.StartAsync(cancellationToken);
+        await service.StartAsync(cancellationToken);
         
         // Assert
         Assert.True(cancellationToken.IsCancellationRequested);

@@ -52,8 +52,8 @@ public static class ServiceCollectionExtensions
         services.AddScoped<IUriValidator, UriValidator>();
         services.AddScoped<IUriExtractorService, UriExtractorService>();
         services.AddScoped<IHtmlParser, HtmlAgilityParser>();
-        services.AddScoped<IDownloadedContentHandlerFactory, DownloadedContentHandlerFactory>();
-        services.AddScoped<IDownloadedContentHandler, HtmlContentHandler>();
+        services.AddScoped<IWebContentHandlerFactory, WebContentHandlerFactory>();
+        services.AddScoped<IWebContentHandler, HtmlContentHandler>();
         services.AddScoped<IUriProcessorService, UriProcessorService>();
     }
     

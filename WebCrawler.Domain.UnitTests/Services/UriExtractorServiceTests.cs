@@ -27,7 +27,6 @@ public class UriExtractorServiceTests
     public void ExtractValidUrls_ShouldReturnValidUrls(
         [Frozen] Mock<IHtmlParser> htmlParserMock,
         [Frozen] Mock<IUriValidator> uriValidatorMock,
-        [Frozen] Mock<ILogger<UriExtractorService>> loggerMock,
         UriExtractorService service)
     {
         // Arrange
@@ -52,7 +51,6 @@ public class UriExtractorServiceTests
     public void ExtractValidUrls_ShouldSkipInvalidUrls(
         [Frozen] Mock<IHtmlParser> htmlParserMock,
         [Frozen] Mock<IUriValidator> uriValidatorMock,
-        [Frozen] Mock<ILogger<UriExtractorService>> loggerMock,
         UriExtractorService service)
     {
         // Arrange
@@ -77,7 +75,6 @@ public class UriExtractorServiceTests
     public void ExtractValidUrls_ShouldLogDuplicateUrls(
         [Frozen] Mock<IHtmlParser> htmlParserMock,
         [Frozen] Mock<IUriValidator> uriValidatorMock,
-        [Frozen] Mock<ILogger<UriExtractorService>> loggerMock,
         UriExtractorService service)
     {
         // Arrange

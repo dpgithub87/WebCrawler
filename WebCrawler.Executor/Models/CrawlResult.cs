@@ -8,7 +8,7 @@ public class CrawlResult
     public Uri Uri { get; set; }
     
     [JsonPropertyName("parentUri")]
-    public Uri ParentUri { get; set; }
+    public Uri? ParentUri { get; set; }
     
     [JsonPropertyName("links")]
     public List<Uri> Links { get; set; }
@@ -19,7 +19,7 @@ public class CrawlResult
     [JsonPropertyName("level")]
     public int DepthLevel { get; set; } 
 
-    public CrawlResult(Uri uri, Uri parentUri)
+    public CrawlResult(Uri uri, Uri? parentUri)
     {
         Uri = uri;
         ParentUri = parentUri;

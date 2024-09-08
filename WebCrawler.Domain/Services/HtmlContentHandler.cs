@@ -3,7 +3,7 @@ using WebCrawler.Infrastructure.Models;
 
 namespace WebCrawler.Domain.Services;
 
-public class HtmlContentHandler : IDownloadedContentHandler
+public class HtmlContentHandler : IWebContentHandler
 {
     private readonly IUriExtractorService _uriExtractor;
 

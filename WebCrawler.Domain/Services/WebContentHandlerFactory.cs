@@ -3,22 +3,22 @@ using WebCrawler.Domain.Services.Interfaces;
 
 namespace WebCrawler.Domain.Services;
 
-public class DownloadedContentHandlerFactory : IDownloadedContentHandlerFactory
+public class WebContentHandlerFactory : IWebContentHandlerFactory
 {
     private readonly IServiceProvider _serviceProvider;
 
     private const string HtmlContentType = "text/html";
     
-    public DownloadedContentHandlerFactory(IServiceProvider serviceProvider)
+    public WebContentHandlerFactory(IServiceProvider serviceProvider)
     {
         _serviceProvider = serviceProvider;
     }
 
-    public IDownloadedContentHandler CreateHandler(string contentType)
+    public IWebContentHandler CreateHandler(string contentType)
     {
         if (contentType.Contains(HtmlContentType))
         {
-            return _serviceProvider.GetRequiredService<IDownloadedContentHandler>();
+            return _serviceProvider.GetRequiredService<IWebContentHandler>();
         }
 
         // Add more handlers for different content types if needed

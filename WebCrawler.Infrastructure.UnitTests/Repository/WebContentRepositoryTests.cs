@@ -26,8 +26,6 @@ public class WebContentRepositoryTests
     public async Task GetWebPageAsync_ShouldReturnCachedContent_WhenCacheHit(
         [Frozen] Mock<IWebContentDownloaderClient> webPageDownloaderClientMock,
         [Frozen] Mock<IDistributedCacheWrapper> cacheMock,
-        [Frozen] Mock<ILogger<WebContentRepository>> loggerMock,
-        [Frozen] IOptions<InfrastructureOptions> options,
         WebContentRepository repository)
     {
         // Arrange
@@ -76,7 +74,7 @@ public class WebContentRepositoryTests
         var infrastructureSettings = Options.Create(infrastructureOptions);
         
         cacheMock.Setup(x => x.GetDownloadedContentAsync(cacheKey, cancellationToken))
-                 .ReturnsAsync((WebContent)null);
+                 .ReturnsAsync((WebContent?)null);
         webPageDownloaderClientMock.Setup(x => x.DownloadAsync(targetUri))
                                    .ReturnsAsync(downloadedContent);
 
@@ -95,8 +93,6 @@ public class WebContentRepositoryTests
     public async Task GetWebPageAsync_ShouldReturnNull_WhenDownloadFails(
         [Frozen] Mock<IWebContentDownloaderClient> webPageDownloaderClientMock,
         [Frozen] Mock<IDistributedCacheWrapper> cacheMock,
-        [Frozen] Mock<ILogger<WebContentRepository>> loggerMock,
-        [Frozen] IOptions<InfrastructureOptions> options,
         WebContentRepository repository)
     {
         // Arrange
@@ -105,9 +101,9 @@ public class WebContentRepositoryTests
         var cacheKey = $"WebPage_{targetUri.AbsoluteUri}";
 
         cacheMock.Setup(x => x.GetDownloadedContentAsync(cacheKey, cancellationToken))
-                 .ReturnsAsync((WebContent)null);
+                 .ReturnsAsync((WebContent?)null);
         webPageDownloaderClientMock.Setup(x => x.DownloadAsync(targetUri))
-                                   .ReturnsAsync((WebContent)null);
+                                   .ReturnsAsync((WebContent?)null);
 
         // Act
         var result = await repository.GetWebPageAsync(targetUri, cancellationToken);
