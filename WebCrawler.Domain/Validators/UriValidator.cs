@@ -49,12 +49,6 @@ public class UriValidator : IUriValidator
             return false;
         }
 
-        if (uri.Host != parentUri.Host)
-        {
-            _logger.LogInformation($"Skipping link with different host: {uri.Host}");
-            return false;
-        }
-
         return true;
     }
 
