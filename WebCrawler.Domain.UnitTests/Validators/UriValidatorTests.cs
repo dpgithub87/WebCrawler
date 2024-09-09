@@ -55,16 +55,6 @@ public class UriValidatorTests
         Assert.False(result);
     }
 
-    [Fact(Skip = "This test isn't required if we need to print URIs of different hosts")]
-    public void IsValidUri_ShouldReturnFalse_ForDifferentHost()
-    {
-        var link = "https://anotherdomain.com/resource";
-
-        var result = _uriValidator.IsValidUri(link, _parentUri, out var uri);
-
-        Assert.False(result);
-    }
-
     [Fact]
     public void IsValidUri_ShouldReturnFalse_ForSameAsParentUri()
     {
